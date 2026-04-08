@@ -1,0 +1,9 @@
+services:
+  selling-clothes-frontend:
+    build: .
+    container_name: selling-clothes-app
+    ports:
+      - "80:80"
+    extra_hosts:
+      - "host.docker.internal:host-gateway" # Allows the container to reach your backend on the host machine
+    restart: always
