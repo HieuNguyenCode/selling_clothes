@@ -7,6 +7,9 @@ import { ToastProvider } from './context/ToastContext';
 import Home from './pages/user/pages/Home';
 import Dashboard from './pages/admin/pages/Dashboard';
 import Products from './pages/admin/pages/Products';
+import Combos from './pages/admin/pages/Combos';
+import ComboDetail from './pages/admin/pages/ComboDetail';
+import ComboForm from './pages/admin/pages/ComboForm';
 import ProductDetail from './pages/admin/pages/ProductDetail';
 import ProductForm from './pages/admin/pages/ProductForm';
 import Brands from './pages/admin/pages/Brands';
@@ -22,7 +25,6 @@ import React from "react";
 const ProtectedAdminRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAdmin, loading } = useUser();
   
-  // Đang gọi API Refresh ngầm, hiện màn hình chờ để tránh nhảy trang
   if (loading) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: 'var(--bg-primary)' }}>
@@ -31,7 +33,6 @@ const ProtectedAdminRoute = ({ children }: { children: React.ReactNode }) => {
     );
   }
 
-  // Nếu không phải admin, đẩy về trang chủ
   if (!isAdmin) {
     return <Navigate to="/" replace />;
   }
@@ -56,15 +57,25 @@ function App() {
 
                     {/* --- ADMIN --- */}
                     <Route path="/admin" element={<ProtectedAdminRoute><Dashboard /></ProtectedAdminRoute>} />
+                    
+                    {/* Quản lý Sản phẩm */}
                     <Route path="/admin/products" element={<ProtectedAdminRoute><Products /></ProtectedAdminRoute>} />
                     <Route path="/admin/products/:id" element={<ProtectedAdminRoute><ProductDetail /></ProtectedAdminRoute>} />
                     <Route path="/admin/add" element={<ProtectedAdminRoute><ProductForm /></ProtectedAdminRoute>} />
                     <Route path="/admin/edit/:id" element={<ProtectedAdminRoute><ProductForm /></ProtectedAdminRoute>} />
+                    
+                    {/* Quản lý Combo */}
+                    <Route path="/admin/combo" element={<ProtectedAdminRoute><Combos /></ProtectedAdminRoute>} />
+                    <Route path="/admin/combo/add" element={<ProtectedAdminRoute><ComboForm /></ProtectedAdminRoute>} />
+                    <Route path="/admin/combo/edit/:id" element={<ProtectedAdminRoute><ComboForm /></ProtectedAdminRoute>} />
+                    <Route path="/admin/combo/:id" element={<ProtectedAdminRoute><ComboDetail /></ProtectedAdminRoute>} />
+
+                    {/* Quản lý Hãng & Danh mục */}
                     <Route path="/admin/brands" element={<ProtectedAdminRoute><Brands /></ProtectedAdminRoute>} />
                     <Route path="/admin/categories" element={<ProtectedAdminRoute><Categories /></ProtectedAdminRoute>} />
 
-                    {/* Placeholder các trang khác */}
-                    {['sale', 'combo', 'accessories', 'orders', 'search', 'cart-status'].map(path => (
+                    {/* Placeholder */}
+                    {['sale', 'accessories', 'orders', 'search', 'cart-status'].map(path => (
                       <Route key={path} path={`/admin/${path}`} element={
                         <ProtectedAdminRoute>
                           <div className="admin-card">

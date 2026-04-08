@@ -6,12 +6,17 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      // Chuyển hướng các yêu cầu ảnh để tránh lỗi CORS
+      // Chuyển hướng các yêu cầu ảnh sản phẩm
       '/images': {
         target: 'http://localhost:5267',
         changeOrigin: true,
       },
-      // Bạn cũng có thể proxy luôn phần API nếu muốn gọn hơn
+      // Chuyển hướng các yêu cầu ảnh Combo
+      '/combos': {
+        target: 'http://localhost:5267',
+        changeOrigin: true,
+      },
+      // Proxy cho API
       '/api': {
         target: 'http://localhost:5267',
         changeOrigin: true,
