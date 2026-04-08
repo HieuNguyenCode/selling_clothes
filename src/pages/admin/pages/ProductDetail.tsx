@@ -13,7 +13,9 @@ const ProductDetail = () => {
     useEffect(() => {
         if (id) {
             productService.fetchProductById(id)
-                .then(setProduct)
+                .then(data => {
+                    if (data) setProduct(data);
+                })
                 .catch(err => alert(err.message))
                 .finally(() => setLoading(false));
         }
@@ -22,35 +24,48 @@ const ProductDetail = () => {
     if (loading) return <div className="admin-card"><Loading size={48}/></div>;
     if (!product) return <div className="admin-card">Không tìm thấy sản phẩm.</div>;
 
-    const getFullUrl = (path: string) => path.startsWith('http') ? path : `${import.meta.env.VITE_API_URL}${path}`;
+    const getImageUrl = (path: string | undefined) => {
+        if (!path) return '';
+        // Nếu path đã là URL tuyệt đối của backend (ví dụ chứa :5267), ta chuyển nó thành tương đối
+        if (path.includes(':5267')) {
+            return path.split(':5267')[1];
+        }
+        // Đảm bảo đường dẫn bắt đầu bằng /images để khớp với Proxy
+        if (path.startsWith('/images/')) return path;
+        if (path.startsWith('images/')) return '/' + path;
+
+        return path;
+    };
 
     return (
         <div style={{display: 'flex', flexDirection: 'column', gap: '24px'}}>
             <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                <button onClick={() => navigate('/admin/products')} className="btn btn-secondary"
+                <button type="button" onClick={() => navigate('/admin/products')} className="btn btn-secondary"
                         style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
                     <ArrowLeft size={18}/> Quay lại
                 </button>
-                <button onClick={() => navigate(`/admin/edit/${product.id}`)} className="btn btn-primary"
+                <button type="button" onClick={() => navigate(`/admin/edit/${product.id}`)} className="btn btn-primary"
                         style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
                     <Edit size={18}/> Chỉnh sửa
                 </button>
             </div>
 
-            <div style={{display: 'grid', gridTemplateColumns: '1fr 1.5fr', gap: '32px'}}>
+            <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '32px'}}>
                 {/* Images Section */}
                 <div className="admin-card" style={{display: 'flex', flexDirection: 'column', gap: '16px'}}>
-                    <img src={getFullUrl(product.image)} alt={product.name}
-                         style={{width: '100%', borderRadius: '12px', border: '1px solid var(--border)'}}/>
+                    <div style={{ width: '100%', aspectRatio: '1/1', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--border)' }}>
+                        <img src={getImageUrl(product.image)} alt={product.name}
+                             style={{width: '100%', height: '100%', objectFit: 'cover'}}/>
+                    </div>
                     <div style={{display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px'}}>
-                        {product.images.map((img, idx) => (
-                            <img key={idx} src={getFullUrl(img)} style={{
-                                width: '100%',
-                                aspectRatio: '1',
-                                objectFit: 'cover',
-                                borderRadius: '8px',
-                                border: '1px solid var(--border)'
-                            }}/>
+                        {product.images && product.images.map((img, idx) => (
+                            <div key={idx} style={{ aspectRatio: '1/1', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border)' }}>
+                                <img src={getImageUrl(img)} style={{
+                                    width: '100%',
+                                    height: '100%',
+                                    objectFit: 'cover'
+                                }} alt={`sub-${idx}`}/>
+                            </div>
                         ))}
                     </div>
                 </div>
@@ -63,7 +78,7 @@ const ProductDetail = () => {
                             <span style={{
                                 fontSize: '1.5rem',
                                 fontWeight: 800,
-                                color: '#1890ff'
+                                color: 'var(--text-primary)'
                             }}>{product.price.toLocaleString('vi-VN')} đ</span>
                             {product.priceSale && <span style={{
                                 textDecoration: 'line-through',
@@ -99,12 +114,13 @@ const ProductDetail = () => {
                         }}>
                             <Maximize2 size={18}/> Kích thước (Sizes)
                         </div>
-                        <div style={{display: 'flex', gap: '10px'}}>
-                            {product.sizes.map(s => <span key={s} style={{
+                        <div style={{display: 'flex', flexWrap: 'wrap', gap: '10px'}}>
+                            {product.sizes && product.sizes.map(s => <span key={s} style={{
                                 padding: '6px 16px',
                                 background: 'var(--bg-accent)',
-                                borderRadius: '8px',
-                                fontWeight: 600
+                                borderRadius: '20px',
+                                fontWeight: 600,
+                                fontSize: '0.85rem'
                             }}>{s}</span>)}
                         </div>
                     </div>
@@ -119,19 +135,20 @@ const ProductDetail = () => {
                         }}>
                             <Palette size={18}/> Màu sắc (Colors)
                         </div>
-                        <div style={{display: 'flex', gap: '10px'}}>
-                            {product.colors.map(c => <span key={c} style={{
+                        <div style={{display: 'flex', flexWrap: 'wrap', gap: '10px'}}>
+                            {product.colors && product.colors.map(c => <span key={c} style={{
                                 padding: '6px 16px',
                                 background: 'var(--bg-accent)',
-                                borderRadius: '8px',
-                                fontWeight: 600
+                                borderRadius: '20px',
+                                fontWeight: 600,
+                                fontSize: '0.85rem'
                             }}>{c}</span>)}
                         </div>
                     </div>
 
                     <div style={{borderTop: '1px solid var(--border)', paddingTop: '20px'}}>
                         <div style={{fontWeight: 600, marginBottom: '10px'}}>Mô tả chi tiết</div>
-                        <p style={{color: 'var(--text-secondary)', lineHeight: '1.6'}}>{product.description}</p>
+                        <p style={{color: 'var(--text-secondary)', lineHeight: '1.6', fontSize: '0.95rem'}}>{product.description}</p>
                     </div>
                 </div>
             </div>

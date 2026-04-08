@@ -10,10 +10,19 @@ const Home = () => {
     useEffect(() => {
         const loadProducts = async () => {
             try {
-                const data = await productService.fetchProducts();
-                setProducts(data);
+                // Kết quả từ service là response body { data: [...], totalCount: ... }
+                const result = await productService.fetchProducts('', 1, 50);
+                console.log("Home Page: API Result:", result);
+                
+                // Trích xuất mảng sản phẩm từ trường 'data'
+                if (result && Array.isArray(result.data)) {
+                    setProducts(result.data);
+                } else {
+                    setProducts([]);
+                }
             } catch (error) {
-                console.error("Error loading products:", error);
+                console.error("Home Page: Error loading products:", error);
+                setProducts([]);
             } finally {
                 setLoading(false);
             }
@@ -21,18 +30,30 @@ const Home = () => {
         loadProducts();
     }, []);
 
-    if (loading) return <Loading size={48} />;
+    if (loading) return (
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
+            <Loading size={48} />
+        </div>
+    );
 
     return (
-        <div>
-            <h1 style={{textAlign: 'left', marginBottom: '2rem'}}>Bộ sưu tập thời trang</h1>
-            <div className="product-grid">
-                {products.map((product) => (
-                    <ProductCard key={product.id} product={product as any}/>
-                ))}
-            </div>
-            {products.length === 0 && (
-                <p style={{textAlign: 'center', marginTop: '3rem'}}>Không có sản phẩm nào để hiển thị.</p>
+        <div style={{ paddingBottom: '50px' }}>
+            <h1 style={{ textAlign: 'left', marginBottom: '30px', fontSize: '1.8rem', fontWeight: 700 }}>
+                Bộ sưu tập thời trang
+            </h1>
+            
+            {products.length > 0 ? (
+                <div className="product-grid">
+                    {products.map((product) => (
+                        <ProductCard key={product.id} product={product as any}/>
+                    ))}
+                </div>
+            ) : (
+                <div style={{ textAlign: 'center', padding: '100px 20px', background: 'var(--bg-secondary)', borderRadius: 'var(--radius-lg)' }}>
+                    <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem' }}>
+                        Hiện tại chưa có sản phẩm nào để hiển thị.
+                    </p>
+                </div>
             )}
         </div>
     );

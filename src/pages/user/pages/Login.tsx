@@ -33,16 +33,21 @@ const Login = () => {
     setError(''); 
 
     try {
-      // 1. Chỉ gọi nghiệp vụ đăng nhập
       const userData = await authService.handleLogin(userName, password);
       
-      // 2. Chỉ khi THÀNH CÔNG mới xử lý logic sau
       if (userData) {
         const token = localStorage.getItem('accessToken');
         const refreshToken = localStorage.getItem('refreshToken');
         if (token && refreshToken) {
-          login(token, refreshToken); // Cập nhật cả 2 token vào Context
-          // Việc điều hướng sẽ được xử lý bởi useEffect phía trên sau khi user state thay đổi
+          // 1. Cập nhật Context ngay lập tức
+          login(token, refreshToken); 
+          
+          // 2. Ép buộc điều hướng ngay dựa trên role
+          if (userData.role.toLowerCase() === 'admin') {
+            navigate('/admin', { replace: true });
+          } else {
+            navigate('/', { replace: true });
+          }
         }
       }
     } catch (err: any) {

@@ -6,6 +6,7 @@ export interface ProductList {
   price: number;
   priceSale: number | null;
   image: string;
+  isPublished: boolean; // Thêm trường này
 }
 
 export interface ProductDetail extends ProductList {
@@ -18,23 +19,13 @@ export interface ProductDetail extends ProductList {
 }
 
 export const productService = {
-  fetchProducts: async (search = ''): Promise<ProductList[]> => {
-    try {
-      const response = await productApi.getProducts(search);
-      return response.data.status === 200 ? response.data.data : [];
-    } catch (error: any) {
-      throw new Error(error.response?.data?.message || 'Lỗi lấy danh sách sản phẩm');
-    }
+  fetchProducts: async (search = '', page = 1, pageSize = 50) => {
+    return productApi.getProducts(search, page, pageSize);
   },
 
-  fetchProductById: async (id: string): Promise<ProductDetail> => {
-    try {
-      const response = await productApi.getProductById(id);
-      if (response.data.status === 200) return response.data.data;
-      throw new Error(response.data.message);
-    } catch (error: any) {
-      throw new Error(error.response?.data?.message || 'Lỗi lấy chi tiết sản phẩm');
-    }
+  fetchProductById: async (id: string) => {
+    const res = await productApi.getProductById(id);
+    return res.data;
   },
 
   handleSaveProduct: async (id: string | null, data: any): Promise<void> => {
@@ -45,35 +36,21 @@ export const productService = {
     formData.append('TypeName', data.typeName);
     formData.append('CompanyName', data.companyName);
     
-    // Append Lists (ASP.NET Core nhận diện list qua nhiều key cùng tên)
-    data.sizes.forEach((s: string) => formData.append('Sizes', s));
-    data.colors.forEach((c: string) => formData.append('Colors', c));
+    if (data.sizes) data.sizes.forEach((s: string) => formData.append('Sizes', s));
+    if (data.colors) data.colors.forEach((c: string) => formData.append('Colors', c));
 
-    // Append Files
     if (data.imageFile) formData.append('Image', data.imageFile);
     if (data.imageFiles) {
       data.imageFiles.forEach((file: File) => formData.append('Images', file));
     }
 
-    try {
-      const response = id 
-        ? await productApi.updateProduct(id, formData)
-        : await productApi.createProduct(formData);
-      
-      if (response.data.status !== 200 && response.data.status !== 201) {
-        throw new Error(response.data.message);
-      }
-    } catch (error: any) {
-      throw new Error(error.response?.data?.message || 'Lỗi lưu sản phẩm');
-    }
+    return productApi.saveProduct(id, formData);
   },
 
-  removeProduct: async (id: string): Promise<void> => {
-    try {
-      const response = await productApi.deleteProduct(id);
-      if (response.data.status !== 200) throw new Error(response.data.message);
-    } catch (error: any) {
-      throw new Error(error.response?.data?.message || 'Lỗi xóa sản phẩm');
-    }
-  }
+  removeProduct: (id: string) => 
+    productApi.deleteProduct(id),
+
+  // Hàm mới để đổi trạng thái hiển thị
+  changePublishStatus: (id: string) =>
+    productApi.togglePublish(id)
 };

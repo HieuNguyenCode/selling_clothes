@@ -1,34 +1,27 @@
 import axiosInstance from '../utils/Axios.Config';
 
+const handleResponse = (res: any) => {
+  if (res.data.status === 200 || res.data.status === 201) return res.data;
+  throw new Error(res.data.message || 'Lỗi hệ thống');
+};
+
 export const productApi = {
-    // Lấy danh sách sản phẩm
-    getProducts: (search = '', page = 1, pageSize = 10) => {
-        return axiosInstance.get(`/api/v1/Product`, {
-            params: {search, page, pageSize}
-        });
-    },
+  getProducts: (search = '', page = 1, pageSize = 10) => 
+    axiosInstance.get(`/api/v1/Product`, { params: { search, page, pageSize } }).then(handleResponse),
 
-    // Lấy chi tiết sản phẩm
-    getProductById: (id: string) => {
-        return axiosInstance.get(`/api/v1/Product/${id}`);
-    },
+  getProductById: (id: string) => 
+    axiosInstance.get(`/api/v1/Product/${id}`).then(handleResponse),
 
-    // Thêm mới sản phẩm (Sử dụng FormData)
-    createProduct: (formData: FormData) => {
-        return axiosInstance.post(`/api/v1/Product`, formData, {
-            headers: {'Content-Type': 'multipart/form-data'}
-        });
-    },
+  saveProduct: (id: string | null, formData: FormData) => {
+    const config = { headers: { 'Content-Type': 'multipart/form-data' } };
+    return id 
+      ? axiosInstance.put(`/api/v1/Product/${id}`, formData, config).then(handleResponse)
+      : axiosInstance.post(`/api/v1/Product`, formData, config).then(handleResponse);
+  },
 
-    // Cập nhật sản phẩm
-    updateProduct: (id: string, formData: FormData) => {
-        return axiosInstance.put(`api/v1/Product/${id}`, formData, {
-            headers: {'Content-Type': 'multipart/form-data'}
-        });
-    },
+  deleteProduct: (id: string) => 
+    axiosInstance.delete(`/api/v1/Product/${id}`).then(handleResponse),
 
-    // Xóa sản phẩm
-    deleteProduct: (id: string) => {
-        return axiosInstance.delete(`api/v1/Product/${id}`);
-    }
+  togglePublish: (id: string) =>
+    axiosInstance.patch(`/api/v1/Product/${id}/Publish`).then(handleResponse)
 };
