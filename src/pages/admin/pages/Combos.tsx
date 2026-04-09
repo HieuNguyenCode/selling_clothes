@@ -1,8 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { comboService, ComboList } from '../../../services/comboService';
-import { Search, RotateCw, Layers, Plus, Eye, Edit, Trash2, ChevronLeft, ChevronRight, CheckCircle2, XCircle } from 'lucide-react';
+import { Layers, Plus, Eye, Edit, Trash2, CheckCircle2, XCircle } from 'lucide-react';
 import Table, { Column } from '../../../components/common/Table';
+import AdminHeader from '../components/AdminHeader';
+import AdminToolbar from '../components/AdminToolbar';
+import Pagination from '../../../components/common/Pagination';
 import { useToast } from '../../../context/ToastContext';
 
 const Combos = () => {
@@ -41,6 +44,17 @@ const Combos = () => {
   useEffect(() => {
     loadCombos(searchTerm, currentPage, pageSize);
   }, [currentPage, pageSize, loadCombos]);
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    setCurrentPage(1);
+    loadCombos(searchTerm, 1, pageSize);
+  };
+
+  const handlePageSizeChange = (newSize: number) => {
+    setPageSize(newSize);
+    setCurrentPage(1);
+  };
 
   const handleTogglePublish = async (id: string) => {
     try {
@@ -132,62 +146,38 @@ const Combos = () => {
 
   return (
     <div className="admin-card">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
-        <div>
-          <h2 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '12px', fontSize: '1.5rem' }}>
-            <Layers size={28} color="#1890ff" /> Quản lý Combo Khuyến mãi
-          </h2>
-          <p style={{ margin: '5px 0 0 40px', color: '#8c8c8c', fontSize: '0.9rem' }}>
-            Tìm thấy <strong>{totalCount}</strong> gói combo
-          </p>
-        </div>
-        <div style={{ display: 'flex', gap: '12px' }}>
-          <button onClick={() => loadCombos(searchTerm, currentPage, pageSize)} className="btn btn-secondary" disabled={loading}>
-            <RotateCw size={18} className={loading ? 'animate-spin' : ''} />
-          </button>
-          <button onClick={() => navigate('/admin/combo/add')} className="btn btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px' }}>
-            <Plus size={18} /> Tạo Combo mới
-          </button>
-        </div>
-      </div>
+      <AdminHeader 
+        title="Quản lý Combo Khuyến mãi"
+        subtitle={`Tìm thấy ${totalCount} gói combo`}
+        icon={Layers}
+        onRefresh={() => loadCombos(searchTerm, currentPage, pageSize)}
+        refreshLoading={loading}
+        actionButton={{
+          label: "Tạo Combo mới",
+          icon: Plus,
+          onClick: () => navigate('/admin/combo/add')
+        }}
+      />
 
-      <div style={{ marginBottom: '24px', display: 'flex', gap: '20px', alignItems: 'center' }}>
-        <form onSubmit={(e) => { e.preventDefault(); setCurrentPage(1); loadCombos(searchTerm, 1, pageSize); }} style={{ flex: 1, display: 'flex', gap: '12px' }}>
-          <div style={{ position: 'relative', flex: 1 }}>
-            <Search size={20} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', opacity: 0.4 }} />
-            <input 
-              type="text" placeholder="Tìm tên gói combo..." 
-              value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
-              style={{ width: '100%', padding: '12px 12px 12px 45px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', background: 'var(--bg-primary)', color: 'var(--text-primary)', fontSize: '1rem', boxSizing: 'border-box' }}
-            />
-          </div>
-          <button type="submit" className="btn btn-primary" disabled={loading} style={{ padding: '0 30px', borderRadius: 'var(--radius-md)' }}>Tìm kiếm</button>
-        </form>
-
-        <div style={{ width: '1px', height: '30px', background: 'var(--border)' }}></div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '0.9rem', whiteSpace: 'nowrap' }}>
-          <span style={{ color: '#8c8c8c' }}>Hiển thị:</span>
-          <select 
-            value={pageSize} onChange={(e) => { setPageSize(Number(e.target.value)); setCurrentPage(1); }}
-            style={{ padding: '10px 15px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', background: 'var(--bg-primary)', cursor: 'pointer', fontWeight: 600, minWidth: '120px' }}
-          >
-            <option value={5}>5 combo</option>
-            <option value={10}>10 combo</option>
-            <option value={25}>25 combo</option>
-          </select>
-        </div>
-      </div>
+      <AdminToolbar 
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+        onSearchSubmit={handleSearch}
+        searchPlaceholder="Tìm tên gói combo..."
+        pageSize={pageSize}
+        onPageSizeChange={handlePageSizeChange}
+        pageSizeOptions={[5, 10, 25]}
+        loading={loading}
+      />
 
       <Table columns={columns} dataSource={combos} loading={loading} rowKey="id" />
 
-      {!loading && totalPages > 1 && (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '20px', marginTop: '30px', padding: '20px 0', borderTop: '1px solid #f0f0f0' }}>
-          <button disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)} style={{ background: 'none', border: '1px solid #d9d9d9', borderRadius: '8px', padding: '8px', cursor: currentPage === 1 ? 'not-allowed' : 'pointer', opacity: currentPage === 1 ? 0.5 : 1 }}><ChevronLeft size={20} /></button>
-          <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>Trang <span style={{ color: '#1890ff' }}>{currentPage}</span> / {totalPages}</div>
-          <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)} style={{ background: 'none', border: '1px solid #d9d9d9', borderRadius: '8px', padding: '8px', cursor: currentPage === totalPages ? 'not-allowed' : 'pointer', opacity: currentPage === totalPages ? 0.5 : 1 }}><ChevronRight size={20} /></button>
-        </div>
-      )}
+      <Pagination 
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+        loading={loading}
+      />
     </div>
   );
 };

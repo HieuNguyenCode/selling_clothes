@@ -14,6 +14,8 @@ import ProductDetail from './pages/admin/pages/ProductDetail';
 import ProductForm from './pages/admin/pages/ProductForm';
 import Brands from './pages/admin/pages/Brands';
 import Categories from './pages/admin/pages/Categories';
+import Sales from './pages/admin/pages/Sales';
+import SaleForm from './pages/admin/pages/SaleForm';
 import AdminLayout from './pages/admin/components/AdminLayout';
 import Header from './pages/user/components/Header';
 import Login from './pages/user/pages/Login';
@@ -73,9 +75,12 @@ function App() {
                     {/* Quản lý Hãng & Danh mục */}
                     <Route path="/admin/brands" element={<ProtectedAdminRoute><Brands /></ProtectedAdminRoute>} />
                     <Route path="/admin/categories" element={<ProtectedAdminRoute><Categories /></ProtectedAdminRoute>} />
+                    <Route path="/admin/sale" element={<ProtectedAdminRoute><Sales /></ProtectedAdminRoute>} />
+                    <Route path="/admin/sale/add" element={<ProtectedAdminRoute><SaleForm /></ProtectedAdminRoute>} />
+                    <Route path="/admin/sale/edit/:id" element={<ProtectedAdminRoute><SaleForm /></ProtectedAdminRoute>} />
 
                     {/* Placeholder */}
-                    {['sale', 'accessories', 'orders', 'search', 'cart-status'].map(path => (
+                    {['accessories', 'orders', 'search', 'cart-status'].map(path => (
                       <Route key={path} path={`/admin/${path}`} element={
                         <ProtectedAdminRoute>
                           <div className="admin-card">
