@@ -20,6 +20,12 @@ import AdminLayout from './pages/admin/components/AdminLayout';
 import Header from './pages/user/components/Header';
 import Login from './pages/user/pages/Login';
 import Cart from './pages/user/pages/Cart';
+import SaleList from './pages/user/pages/SaleList';
+import SaleDetailPage from './pages/user/pages/SaleDetailPage';
+import UserProductList from './pages/user/pages/UserProductList';
+import UserProductDetail from './pages/user/pages/UserProductDetail';
+import UserComboList from './pages/user/pages/UserComboList';
+import UserComboDetail from './pages/user/pages/UserComboDetail';
 import './App.css';
 import React from "react";
 
@@ -56,6 +62,14 @@ function App() {
                     <Route path="/" element={<><Header /><main className="main-content"><Home /></main><UserFooter /></>} />
                     <Route path="/login" element={<><Header /><main className="main-content"><Login /></main><UserFooter /></>} />
                     <Route path="/cart" element={<><Header /><main className="main-content"><Cart /></main><UserFooter /></>} />
+                    
+                    {/* Danh sách & Chi tiết */}
+                    <Route path="/products" element={<><Header /><main className="main-content"><UserProductList /></main><UserFooter /></>} />
+                    <Route path="/products/:id" element={<><Header /><main className="main-content"><UserProductDetail /></main><UserFooter /></>} />
+                    <Route path="/combos" element={<><Header /><main className="main-content"><UserComboList /></main><UserFooter /></>} />
+                    <Route path="/combos/:id" element={<><Header /><main className="main-content"><UserComboDetail /></main><UserFooter /></>} />
+                    <Route path="/sale" element={<><Header /><main className="main-content"><SaleList /></main><UserFooter /></>} />
+                    <Route path="/sale/:id" element={<><Header /><main className="main-content"><SaleDetailPage /></main><UserFooter /></>} />
 
                     {/* --- ADMIN --- */}
                     <Route path="/admin" element={<ProtectedAdminRoute><Dashboard /></ProtectedAdminRoute>} />

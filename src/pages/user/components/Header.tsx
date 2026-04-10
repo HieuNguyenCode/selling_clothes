@@ -25,9 +25,9 @@ const Header = () => {
 
                 <nav className="header-nav">
                     <Link to="/">Sản phẩm mới</Link>
-                    <Link to="/">Sale</Link>
-                    <Link to="/">Sản phẩm</Link>
-                    <Link to="/">Combo</Link>
+                    <Link to="/sale">Sale</Link>
+                    <Link to="/products">Sản phẩm</Link>
+                    <Link to="/combos">Combo</Link>
                     <Link to="/">Phụ kiện</Link>
                     <Link to="/">Hệ thống cửa hàng</Link>
                 </nav>
