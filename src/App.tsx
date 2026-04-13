@@ -19,6 +19,7 @@ import SaleForm from './pages/admin/pages/SaleForm';
 import AdminLayout from './pages/admin/components/AdminLayout';
 import Header from './pages/user/components/Header';
 import Login from './pages/user/pages/Login';
+import Register from './pages/user/pages/Register';
 import Cart from './pages/user/pages/Cart';
 import SaleList from './pages/user/pages/SaleList';
 import SaleDetailPage from './pages/user/pages/SaleDetailPage';
@@ -61,6 +62,7 @@ function App() {
                     {/* --- NGƯỜI DÙNG --- */}
                     <Route path="/" element={<><Header /><main className="main-content"><Home /></main><UserFooter /></>} />
                     <Route path="/login" element={<><Header /><main className="main-content"><Login /></main><UserFooter /></>} />
+                    <Route path="/register" element={<><Header /><main className="main-content"><Register /></main><UserFooter /></>} />
                     <Route path="/cart" element={<><Header /><main className="main-content"><Cart /></main><UserFooter /></>} />
                     
                     {/* Danh sách & Chi tiết */}

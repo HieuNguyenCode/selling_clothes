@@ -42,23 +42,23 @@ const UserComboList = () => {
   return (
     <div className="container" style={{ padding: '40px 20px' }}>
       <div style={{ textAlign: 'center', marginBottom: '60px' }}>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', background: '#f9f0ff', color: '#722ed1', padding: '8px 20px', borderRadius: '30px', marginBottom: '20px', fontWeight: 700, fontSize: '0.85rem' }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', background: 'var(--bg-accent)', color: 'var(--text-primary)', padding: '8px 20px', borderRadius: '30px', marginBottom: '20px', fontWeight: 700, fontSize: '0.85rem' }}>
           <Layers size={18} /> SIÊU TIẾT KIỆM
         </div>
-        <h1 style={{ fontSize: '3rem', fontWeight: 900, margin: '0 0 15px 0' }}>COMBO ƯU ĐÃI</h1>
-        <p style={{ color: '#8c8c8c', maxWidth: '600px', margin: '0 auto' }}>Sở hữu trọn bộ trang phục sành điệu với mức giá không thể hấp dẫn hơn. Tiết kiệm lên đến 30% khi mua theo Combo.</p>
+        <h1 style={{ fontSize: '3rem', fontWeight: 900, margin: '0 0 15px 0', color: 'var(--text-primary)' }}>COMBO ƯU ĐÃI</h1>
+        <p style={{ color: 'var(--text-secondary)', maxWidth: '600px', margin: '0 auto' }}>Sở hữu trọn bộ trang phục sành điệu với mức giá không thể hấp dẫn hơn. Tiết kiệm lên đến 30% khi mua theo Combo.</p>
       </div>
 
       <div style={{ marginBottom: '40px', display: 'center', justifyContent: 'center' }}>
         <form onSubmit={handleSearch} style={{ display: 'flex', gap: '10px', width: '100%', maxWidth: '500px', margin: '0 auto' }}>
           <div style={{ position: 'relative', flex: 1 }}>
-            <Search size={18} style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)', color: '#8c8c8c' }} />
+            <Search size={18} style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }} />
             <input 
               type="text" 
               placeholder="Tìm kiếm gói combo..." 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              style={{ width: '100%', padding: '14px 14px 14px 45px', borderRadius: '30px', border: '1px solid #d9d9d9', outline: 'none', fontSize: '1rem', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}
+              style={{ width: '100%', padding: '14px 14px 14px 45px', borderRadius: '30px', border: '1px solid var(--border)', background: 'var(--bg-primary)', color: 'var(--text-primary)', outline: 'none', fontSize: '1rem', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}
             />
           </div>
           <button type="submit" className="btn btn-primary" style={{ padding: '0 30px', borderRadius: '30px' }}>TÌM KIẾM</button>
@@ -74,22 +74,22 @@ const UserComboList = () => {
               <div 
                 key={combo.id} 
                 className="combo-card" 
-                style={{ background: 'white', borderRadius: '20px', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.08)', border: '1px solid #f0f0f0', transition: 'all 0.3s', cursor: 'pointer' }}
+                style={{ background: 'var(--bg-primary)', borderRadius: '20px', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.08)', border: '1px solid var(--border)', transition: 'all 0.3s', cursor: 'pointer' }}
                 onClick={() => navigate(`/combos/${combo.id}`)}
               >
-                <div style={{ position: 'relative', width: '100%', aspectRatio: '4/3', overflow: 'hidden' }}>
+                <div style={{ position: 'relative', width: '100%', aspectRatio: '4/3', overflow: 'hidden', background: 'var(--bg-secondary)' }}>
                   <img src={combo.image} alt={combo.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  <div style={{ position: 'absolute', top: '15px', right: '15px', background: '#722ed1', color: 'white', padding: '5px 15px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 700 }}>
+                  <div style={{ position: 'absolute', top: '15px', right: '15px', background: 'var(--accent-color)', color: 'var(--bg-primary)', padding: '5px 15px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 700 }}>
                     COMBO HOT
                   </div>
                 </div>
                 <div style={{ padding: '25px' }}>
-                  <h3 style={{ fontSize: '1.25rem', margin: '0 0 15px 0', fontWeight: 700, minHeight: '3em' }}>{combo.name}</h3>
+                  <h3 style={{ fontSize: '1.25rem', margin: '0 0 15px 0', fontWeight: 700, minHeight: '3em', color: 'var(--text-primary)' }}>{combo.name}</h3>
                   
                   <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '25px' }}>
                     <div style={{ color: '#ff4d4f', fontWeight: 900, fontSize: '1.5rem' }}>{combo.price.toLocaleString('vi-VN')} đ</div>
                     {combo.priceSale && (
-                      <div style={{ color: '#8c8c8c', textDecoration: 'line-through', fontSize: '0.9rem' }}>{combo.priceSale.toLocaleString('vi-VN')} đ</div>
+                      <div style={{ color: 'var(--text-secondary)', textDecoration: 'line-through', fontSize: '0.9rem' }}>{combo.priceSale.toLocaleString('vi-VN')} đ</div>
                     )}
                   </div>
 
@@ -97,7 +97,31 @@ const UserComboList = () => {
                     <button 
                       className="btn btn-secondary" 
                       style={{ flex: 1, height: '45px', borderRadius: '10px', fontSize: '0.85rem' }}
-                      onClick={(e) => { e.stopPropagation(); addToCart({...combo, price: combo.priceSale || combo.price, isCombo: true} as any); }}
+                      onClick={async (e) => { 
+                        e.stopPropagation(); 
+                        try {
+                          const fullCombo = await comboService.fetchComboById(combo.id);
+                          await addToCart({
+                            isCombo: true,
+                            name: fullCombo.name,
+                            quantity: 1,
+                            price: fullCombo.price,
+                            image: fullCombo.image,
+                            products: fullCombo.products.map(p => ({
+                              id: p.id,
+                              name: p.name,
+                              image: p.image,
+                              size: '',
+                              color: '',
+                              quantity: p.quantity
+                            }))
+                          });
+                          alert('Đã thêm combo vào giỏ hàng');
+                        } catch (error) {
+                          console.error(error);
+                          alert('Lỗi khi thêm combo vào giỏ hàng');
+                        }
+                      }}
                     >
                       <ShoppingBag size={18} /> THÊM GIỎ
                     </button>

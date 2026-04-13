@@ -34,6 +34,18 @@ export const authService = {
   },
 
   /**
+   * Logic xử lý đăng ký
+   */
+  handleRegister: async (userName: string, password: string): Promise<boolean> => {
+    try {
+      const response = await authApi.register(userName, password);
+      return response.status === 200 || response.status === 201;
+    } catch (error: any) {
+      throw new Error(error.message || 'Đăng ký thất bại. Vui lòng thử lại.');
+    }
+  },
+
+  /**
    * Giải mã Token
    */
   getUserFromToken: (token: string | null): UserInfo | null => {

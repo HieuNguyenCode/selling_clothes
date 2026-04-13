@@ -83,11 +83,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
         <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '8px' }}>
           <button 
-            onClick={(e) => { e.stopPropagation(); addToCart({ ...product, price: currentPrice } as any); }} 
-            className="btn btn-secondary"
-            style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.75rem', height: '38px' }}
+            className="btn btn-primary"
+            style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.75rem', height: '38px', borderRadius: '8px' }}
           >
-            <ShoppingCart size={16} /> Thêm vào giỏ
+            Xem chi tiết
           </button>
         </div>
       </div>

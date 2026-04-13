@@ -174,7 +174,7 @@ const Login = () => {
         </form>
 
         <div style={{ marginTop: '30px', borderTop: '1px solid var(--border)', paddingTop: '20px' }}>
-          <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Chưa có tài khoản? <Link to="/" style={{ color: 'var(--text-primary)', fontWeight: 700, textDecoration: 'none' }}>Đăng ký ngay</Link></p>
+          <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Chưa có tài khoản? <Link to="/register" style={{ color: 'var(--text-primary)', fontWeight: 700, textDecoration: 'none' }}>Đăng ký ngay</Link></p>
           <div style={{ marginTop: '15px', padding: '10px', background: 'var(--bg-accent)', fontSize: '0.75rem', borderRadius: 'var(--radius-sm)' }}>Tài khoản dùng thử: <strong>admin</strong> / <strong>admin</strong></div>
         </div>
       </div>

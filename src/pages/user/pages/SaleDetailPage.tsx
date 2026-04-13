@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { saleService, SaleDetail } from '../../../services/saleService';
 import { Percent, ArrowLeft, Package, Layers, Clock } from 'lucide-react';
 import Loading from '../../../components/common/Loading';
@@ -7,6 +7,7 @@ import ProductCard from '../components/ProductCard';
 
 const SaleDetailPage = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [detail, setDetail] = useState<SaleDetail | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -104,7 +105,13 @@ const SaleDetailPage = () => {
                       <div style={{ color: '#ff4d4f', fontWeight: 800, fontSize: '1.2rem' }}>{combo.price.toLocaleString('vi-VN')} đ</div>
                       <div style={{ color: '#8c8c8c', fontSize: '0.8rem', textDecoration: 'line-through' }}>{(combo.price * 1.3).toLocaleString('vi-VN')} đ</div>
                     </div>
-                    <button className="btn btn-primary" style={{ padding: '8px 15px', fontSize: '0.85rem' }}>XEM CHI TIẾT</button>
+                    <button 
+                      className="btn btn-primary" 
+                      style={{ padding: '8px 15px', fontSize: '0.85rem' }}
+                      onClick={() => navigate(`/combos/${combo.id}`)}
+                    >
+                      XEM CHI TIẾT
+                    </button>
                   </div>
                 </div>
               </div>

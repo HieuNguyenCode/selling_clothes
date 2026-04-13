@@ -9,11 +9,17 @@ const handleResponse = (res: any) => {
 };
 
 export const authApi = {
-    login: (userName: string, password: string) => {
-        return axiosInstance.post('/api/v1/Auth/Login', {userName, password}).then(handleResponse);
+    login: async (userName: string, password: string) => {
+        const res = await axiosInstance.post('/api/v1/Auth/Login', {userName, password});
+        return handleResponse(res);
     },
 
-    refreshToken: (token: string) => {
+    register: async (username: string, password: string) => {
+        const res = await axiosInstance.post('/api/v1/Auth/Register', { username, password });
+        return handleResponse(res);
+    },
+
+    refreshToken: async (token: string) => {
         // Gọi axios thuần vì header Authorization sử dụng refresh token theo logic đặc thù
         return axios.patch(`${API_URL}/api/v1/Auth/RefreshToken`, {}, {
             headers: {
