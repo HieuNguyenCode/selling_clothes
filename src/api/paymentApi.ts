@@ -71,6 +71,24 @@ export interface OrderStatusUpdateDto {
   paymentStatus?: string;
 }
 
+export interface TopSellingItem {
+  id: string;
+  name: string;
+  type: string;
+  totalSold: number;
+  revenue: number;
+  image: string;
+}
+
+export interface DashboardStats {
+  totalRevenue: number;
+  newOrdersCount: number;
+  totalCustomers: number;
+  revenueGrowth: number;
+  topSellingItems: TopSellingItem[];
+  recentOrders: OrderAdminResponseDto[];
+}
+
 export const paymentApi = {
   createPayment: (data: ShoppingCartUpdateDto) =>
     axiosInstance.post('/api/v1/Payment', data),
@@ -79,6 +97,9 @@ export const paymentApi = {
     axiosInstance.get<PagedResult<OrderAdminResponseDto>>('/api/v1/Payment/Admin/Orders', {
       params: { page, pageSize, status }
     }),
+
+  getDashboard: () =>
+    axiosInstance.get<DashboardStats>('/api/v1/Payment/admin/dashboard'),
 
   getUserOrders: (sessionId?: string, page = 1, pageSize = 10) =>
     axiosInstance.get<PagedResult<OrderAdminResponseDto>>('/api/v1/Payment/user/orders', {

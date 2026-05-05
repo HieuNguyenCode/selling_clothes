@@ -53,5 +53,18 @@ export const paymentService = {
     } catch (error: any) {
       throw new Error(error.response?.data?.message || error.message || 'Lỗi khi lấy danh sách đơn hàng');
     }
+  },
+
+  getDashboardStats: async () => {
+    try {
+      const res = await paymentApi.getDashboard();
+      const responseData: any = res.data;
+      if (responseData.status === 200) {
+        return responseData.data;
+      }
+      return responseData;
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || error.message || 'Lỗi khi lấy dữ liệu báo cáo');
+    }
   }
 };

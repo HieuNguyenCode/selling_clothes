@@ -8,6 +8,7 @@ import {
 import Loading from '../../../components/common/Loading';
 import { useCart } from '../../../context/Cart.Context.tsx';
 import ProductCard from '../components/ProductCard';
+import { getImageUrl } from '../../../utils/urlUtils';
 
 const UserProductDetail = () => {
   const { id } = useParams();
@@ -49,12 +50,6 @@ const UserProductDetail = () => {
 
   if (loading) return <Loading />;
   if (!product) return <div className="container" style={{ padding: '100px 20px', textAlign: 'center' }}>Sản phẩm không tồn tại.</div>;
-
-  const getImageUrl = (path: string | undefined) => {
-    if (!path) return '';
-    if (path.includes(':5267')) return path.split(':5267')[1];
-    return path.startsWith('/') ? path : `/${path}`;
-  };
 
   const handleAddToCart = async () => {
     if ((product.sizes.length > 0 && !selectedSize) || (product.colors.length > 0 && !selectedColor)) {

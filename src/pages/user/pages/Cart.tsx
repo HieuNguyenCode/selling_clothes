@@ -6,6 +6,7 @@ import { paymentService } from '../../../services/paymentService';
 import { useToast } from '../../../context/ToastContext';
 import Modal from '../../../components/common/Modal';
 import { ShoppingBag, CreditCard, User, Phone, MapPin, CheckCircle2, Trash2 } from 'lucide-react';
+import { getImageUrl } from '../../../utils/urlUtils';
 
 const Cart = () => {
   const { cart, removeFromCart, clearCart, updateCartItem } = useCart();
@@ -31,14 +32,6 @@ const Cart = () => {
     const currentCartIds = cart.map(item => item.id);
     setSelectedIds(prev => prev.filter(id => currentCartIds.includes(id)));
   }, [cart]);
-
-  const getFullUrl = (path: string | undefined) => {
-    if (!path) return '';
-    if (path.includes(':5267')) {
-      return path.split(':5267')[1]; 
-    }
-    return path.startsWith('/') ? path : `/${path}`;
-  };
 
   const handleToggleSelect = (id: string) => {
     setSelectedIds(prev => 
@@ -190,7 +183,7 @@ const Cart = () => {
                     <td style={{ padding: '20px' }}>
                       <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
                         <div style={{ width: '90px', height: '110px', borderRadius: '12px', overflow: 'hidden', background: 'var(--bg-secondary)', flexShrink: 0 }}>
-                          <img src={getFullUrl(item.image)} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          <img src={getImageUrl(item.image)} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         </div>
                         <div>
                           <div style={{ fontWeight: 800, fontSize: '1.1rem', marginBottom: '5px', color: 'var(--text-primary)' }}>{item.name}</div>

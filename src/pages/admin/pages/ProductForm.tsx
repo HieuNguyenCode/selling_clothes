@@ -6,7 +6,8 @@ import {brandService} from '../../../services/brandService';
 import {ArrowLeft, Save, Image as ImageIcon, Plus, X, RotateCw} from 'lucide-react';
 import Loading from '../../../components/common/Loading';
 import SearchableSelect from '../../../components/common/SearchableSelect';
-import {useToast} from '../../../context/ToastContext';
+import { useToast } from '../../../context/ToastContext';
+import { getImageUrl } from '../../../utils/urlUtils';
 
 const ProductForm = () => {
     const {id} = useParams();
@@ -38,12 +39,6 @@ const ProductForm = () => {
 
     const [newSize, setNewSize] = useState('');
     const [newColor, setNewColor] = useState('');
-
-    const getImageUrl = (path: string) => {
-        if (!path) return '';
-        if (path.startsWith('http')) return path;
-        return path.startsWith('/images/') ? path : `/images/${path}`;
-    };
 
     const urlToFile = async (url: string) => {
         try {

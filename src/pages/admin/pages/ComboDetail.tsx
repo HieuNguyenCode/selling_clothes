@@ -1,8 +1,9 @@
 import {useState, useEffect} from 'react';
-import {useParams, useNavigate} from 'react-router-dom';
-import {comboService, ComboDetail as IComboDetail} from '../../../services/comboService';
-import {ArrowLeft, Edit, Package, Tag} from 'lucide-react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { comboService, ComboDetail as IComboDetail } from '../../../services/comboService';
+import { ArrowLeft, Edit, Package, Tag } from 'lucide-react';
 import Loading from '../../../components/common/Loading';
+import { getImageUrl } from '../../../utils/urlUtils';
 
 const ComboDetail = () => {
     const {id} = useParams();
@@ -21,12 +22,6 @@ const ComboDetail = () => {
 
     if (loading) return <div className="admin-card"><Loading size={48}/></div>;
     if (!combo) return <div className="admin-card">Không tìm thấy combo.</div>;
-
-    const getImageUrl = (path: string | undefined) => {
-        if (!path) return '';
-        if (path.includes(':5267')) return path.split(':5267')[1];
-        return path.startsWith('/') ? path : `/${path}`;
-    };
 
     return (
         <div style={{display: 'flex', flexDirection: 'column', gap: '24px'}}>

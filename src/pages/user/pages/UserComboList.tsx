@@ -5,6 +5,7 @@ import { Search, Layers, ChevronRight, ShoppingBag } from 'lucide-react';
 import Loading from '../../../components/common/Loading';
 import Pagination from '../../../components/common/Pagination';
 import { useCart } from '../../../context/Cart.Context.tsx';
+import { getImageUrl } from '../../../utils/urlUtils';
 
 const UserComboList = () => {
   const [combos, setCombos] = useState<any[]>([]);
@@ -78,7 +79,7 @@ const UserComboList = () => {
                 onClick={() => navigate(`/combos/${combo.id}`)}
               >
                 <div style={{ position: 'relative', width: '100%', aspectRatio: '4/3', overflow: 'hidden', background: 'var(--bg-secondary)' }}>
-                  <img src={combo.image} alt={combo.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <img src={getImageUrl(combo.image)} alt={combo.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   <div style={{ position: 'absolute', top: '15px', right: '15px', background: 'var(--accent-color)', color: 'var(--bg-primary)', padding: '5px 15px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 700 }}>
                     COMBO HOT
                   </div>

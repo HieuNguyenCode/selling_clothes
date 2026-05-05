@@ -7,6 +7,7 @@ import AdminHeader from '../components/AdminHeader';
 import AdminToolbar from '../components/AdminToolbar';
 import Pagination from '../../../components/common/Pagination';
 import { useToast } from '../../../context/ToastContext';
+import { getImageUrl } from '../../../utils/urlUtils';
 
 const Products = () => {
   const [products, setProducts] = useState<ProductList[]>([]);
@@ -76,14 +77,6 @@ const Products = () => {
         showToast(error.message, "error");
       }
     }
-  };
-
-  const getImageUrl = (path: string) => {
-    if (!path) return '';
-    if (path.includes(':5267')) return path.split(':5267')[1];
-    if (path.startsWith('/images/')) return path;
-    if (path.startsWith('images/')) return '/' + path;
-    return path;
   };
 
   const columns: Column<ProductList>[] = [

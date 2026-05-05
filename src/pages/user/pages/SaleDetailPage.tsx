@@ -4,6 +4,7 @@ import { saleService, SaleDetail } from '../../../services/saleService';
 import { Percent, ArrowLeft, Package, Layers, Clock } from 'lucide-react';
 import Loading from '../../../components/common/Loading';
 import ProductCard from '../components/ProductCard';
+import { getImageUrl } from '../../../utils/urlUtils';
 
 const SaleDetailPage = () => {
   const { id } = useParams();
@@ -96,7 +97,7 @@ const SaleDetailPage = () => {
             {detail.saleCombos.map(combo => (
               <div key={combo.id} style={{ background: 'white', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 4px 15px rgba(0,0,0,0.05)', border: '1px solid #f0f0f0' }}>
                 <div style={{ width: '100%', aspectRatio: '16/9', overflow: 'hidden' }}>
-                  <img src={combo.image} alt={combo.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <img src={getImageUrl(combo.image)} alt={combo.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
                 <div style={{ padding: '20px' }}>
                   <h3 style={{ fontSize: '1.1rem', margin: '0 0 10px 0', minHeight: '2.4em' }}>{combo.name}</h3>

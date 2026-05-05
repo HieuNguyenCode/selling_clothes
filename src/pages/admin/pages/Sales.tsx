@@ -9,6 +9,7 @@ import Pagination from '../../../components/common/Pagination';
 import Modal from '../../../components/common/Modal';
 import AdminButton from '../components/AdminButton';
 import { useToast } from '../../../context/ToastContext';
+import { getImageUrl } from '../../../utils/urlUtils';
 
 const Sales = () => {
   const [sales, setSales] = useState<Sale[]>([]);
@@ -190,7 +191,7 @@ const Sales = () => {
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '15px', marginBottom: '30px' }}>
                 {saleDetail.saleProducts.map(product => (
                   <div key={product.id} style={{ display: 'flex', gap: '12px', padding: '12px', border: '1px solid #f0f0f0', borderRadius: '8px', background: '#fafafa' }}>
-                    <img src={product.image} alt={product.name} style={{ width: '60px', height: '60px', borderRadius: '6px', objectFit: 'cover' }} />
+                    <img src={getImageUrl(product.image)} alt={product.name} style={{ width: '60px', height: '60px', borderRadius: '6px', objectFit: 'cover' }} />
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontWeight: 600, fontSize: '0.9rem', marginBottom: '4px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{product.name}</div>
                       <div style={{ color: '#ff4d4f', fontWeight: 700, fontSize: '0.85rem' }}>{product.price.toLocaleString('vi-VN')} đ</div>
@@ -213,7 +214,7 @@ const Sales = () => {
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '15px' }}>
                 {saleDetail.saleCombos.map(combo => (
                   <div key={combo.id} style={{ display: 'flex', gap: '12px', padding: '12px', border: '1px solid #f0f0f0', borderRadius: '8px', background: '#fafafa' }}>
-                    <img src={combo.image} alt={combo.name} style={{ width: '60px', height: '60px', borderRadius: '6px', objectFit: 'cover' }} />
+                    <img src={getImageUrl(combo.image)} alt={combo.name} style={{ width: '60px', height: '60px', borderRadius: '6px', objectFit: 'cover' }} />
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontWeight: 600, fontSize: '0.9rem', marginBottom: '4px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{combo.name}</div>
                       <div style={{ color: '#ff4d4f', fontWeight: 700, fontSize: '0.85rem' }}>{combo.price.toLocaleString('vi-VN')} đ</div>

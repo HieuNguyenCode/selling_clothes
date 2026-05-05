@@ -6,6 +6,7 @@ import { ArrowLeft, Save, Image as ImageIcon, Plus, X, RotateCw, Trash2 } from '
 import Loading from '../../../components/common/Loading';
 import SearchableSelect from '../../../components/common/SearchableSelect';
 import { useToast } from '../../../context/ToastContext';
+import { getImageUrl } from '../../../utils/urlUtils';
 
 const ComboForm = () => {
   const { id } = useParams();
@@ -31,12 +32,6 @@ const ComboForm = () => {
   // Helper for adding new product to list
   const [selectedProdName, setSelectedProdName] = useState('');
   const [selectedProdQty, setSelectedProdQty] = useState(1);
-
-  const getImageUrl = (path: string) => {
-    if (!path) return '';
-    if (path.startsWith('http')) return path;
-    return path.startsWith('/') ? path : `/${path}`;
-  };
 
   const urlToFile = async (url: string) => {
     try {

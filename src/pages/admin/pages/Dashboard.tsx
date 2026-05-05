@@ -1,23 +1,69 @@
-import {Link} from 'react-router-dom';
-import {useProducts} from '../../../context/Product.Context.tsx';
-import {ShoppingBag, TrendingUp, Users, DollarSign, Edit, Trash2} from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { useProducts } from '../../../context/Product.Context.tsx';
+import { paymentService } from '../../../services/paymentService';
+import { DashboardStats } from '../../../api/paymentApi';
+import { ShoppingBag, TrendingUp, Users, DollarSign, Edit, Trash2, RefreshCcw } from 'lucide-react';
+import { useToast } from '../../../context/ToastContext';
+import Loading from '../../../components/common/Loading';
+import { getImageUrl } from '../../../utils/urlUtils';
 
 const Dashboard = () => {
-    const {products, deleteProduct} = useProducts();
+    const { products, deleteProduct } = useProducts();
+    const { showToast } = useToast();
+    const [statsData, setStatsData] = useState<DashboardStats | null>(null);
+    const [loading, setLoading] = useState(true);
+
+    const fetchStats = async () => {
+        setLoading(true);
+        try {
+            const data = await paymentService.getDashboardStats();
+            if (data) {
+                setStatsData(data);
+            }
+        } catch (error: any) {
+            showToast(error.message, 'error');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchStats();
+    }, []);
 
     const stats = [
-        {title: 'Doanh thu', value: '124,500,000 đ', icon: <DollarSign size={24}/>, color: '#52c41a'},
-        {title: 'Đơn hàng mới', value: '48', icon: <ShoppingBag size={24}/>, color: '#1890ff'},
-        {title: 'Khách hàng', value: '1,240', icon: <Users size={24}/>, color: '#faad14'},
-        {title: 'Tăng trưởng', value: '+12.5%', icon: <TrendingUp size={24}/>, color: '#eb2f96'},
+        { title: 'Doanh thu', value: `${(statsData?.totalRevenue || 0).toLocaleString('vi-VN')} đ`, icon: <DollarSign size={24} />, color: '#52c41a' },
+        { title: 'Đơn hàng mới', value: (statsData?.newOrdersCount || 0).toString(), icon: <ShoppingBag size={24} />, color: '#1890ff' },
+        { title: 'Khách hàng', value: (statsData?.totalCustomers || 0).toLocaleString('vi-VN'), icon: <Users size={24} />, color: '#faad14' },
+        { title: 'Tăng trưởng', value: `${(statsData?.revenueGrowth || 0) >= 0 ? '+' : ''}${statsData?.revenueGrowth || 0}%`, icon: <TrendingUp size={24} />, color: '#eb2f96' },
     ];
 
+    if (loading && !statsData) return <Loading />;
+
     return (
-        <div style={{display: 'flex', flexDirection: 'column', gap: '24px'}}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            {/* Header with Refresh */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <h2 style={{ margin: 0 }}>Báo cáo tổng quan</h2>
+                <button 
+                    onClick={fetchStats} 
+                    disabled={loading}
+                    style={{ 
+                        display: 'flex', alignItems: 'center', gap: '8px', 
+                        padding: '8px 16px', borderRadius: '8px', border: '1px solid var(--border)',
+                        background: 'var(--bg-primary)', cursor: 'pointer', fontSize: '0.9rem'
+                    }}
+                >
+                    <RefreshCcw size={16} className={loading ? 'animate-spin' : ''} />
+                    Làm mới
+                </button>
+            </div>
+
             {/* Stats Cards */}
-            <div style={{display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '24px'}}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '24px' }}>
                 {stats.map((stat, idx) => (
-                    <div key={idx} className="admin-card" style={{display: 'flex', alignItems: 'center', gap: '20px'}}>
+                    <div key={idx} className="admin-card" style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
                         <div style={{
                             padding: '12px',
                             background: `${stat.color}15`,
@@ -27,16 +73,16 @@ const Dashboard = () => {
                             {stat.icon}
                         </div>
                         <div>
-                            <div style={{fontSize: '0.85rem', color: '#8c8c8c'}}>{stat.title}</div>
-                            <div style={{fontSize: '1.25rem', fontWeight: 700}}>{stat.value}</div>
+                            <div style={{ fontSize: '0.85rem', color: '#8c8c8c' }}>{stat.title}</div>
+                            <div style={{ fontSize: '1.25rem', fontWeight: 700 }}>{stat.value}</div>
                         </div>
                     </div>
                 ))}
             </div>
 
             {/* Main Content Area */}
-            <div style={{display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px'}}>
-                <div className="admin-card" style={{padding: '0'}}>
+            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1.2fr', gap: '24px' }}>
+                <div className="admin-card" style={{ padding: '0' }}>
                     <div style={{
                         padding: '24px',
                         borderBottom: '1px solid #f0f0f0',
@@ -44,84 +90,92 @@ const Dashboard = () => {
                         justifyContent: 'space-between',
                         alignItems: 'center'
                     }}>
-                        <h3 style={{margin: 0}}>Sản phẩm nổi bật</h3>
-                        <Link to="/admin/add" className="btn btn-primary"
-                              style={{fontSize: '0.8rem', padding: '6px 12px', borderRadius: '4px'}}>Thêm mới</Link>
+                        <h3 style={{ margin: 0 }}>Sản phẩm bán chạy</h3>
+                        <Link to="/admin/products" className="btn btn-secondary"
+                            style={{ fontSize: '0.8rem', padding: '6px 12px', borderRadius: '4px', textDecoration: 'none' }}>Quản lý kho</Link>
                     </div>
 
                     <table className="admin-table-v2">
                         <thead>
-                        <tr>
-                            <th>Sản phẩm</th>
-                            <th>Giá</th>
-                            <th>Tình trạng</th>
-                            <th>Thao tác</th>
-                        </tr>
+                            <tr>
+                                <th>Sản phẩm</th>
+                                <th>Loại</th>
+                                <th>Đã bán</th>
+                                <th>Doanh thu</th>
+                            </tr>
                         </thead>
                         <tbody>
-                        {products.slice(0, 5).map(product => (
-                            <tr key={product.id}>
-                                <td>
-                                    <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
-                                        <img src={product.imageUrl} alt={product.name} style={{
-                                            width: '40px',
-                                            height: '40px',
-                                            borderRadius: '4px',
-                                            objectFit: 'cover'
-                                        }}/>
-                                        <span style={{fontWeight: 500}}>{product.name}</span>
-                                    </div>
-                                </td>
-                                <td>{product.price.toLocaleString('vi-VN')} đ</td>
-                                <td><span className="status-badge status-delivered">Còn hàng</span></td>
-                                <td>
-                                    <div style={{display: 'flex', gap: '10px'}}>
-                                        <Link to={`/admin/edit/${product.id}`} style={{color: '#1890ff'}}><Edit
-                                            size={16}/></Link>
-                                        <button onClick={() => deleteProduct(product.id)} style={{
-                                            background: 'none',
-                                            border: 'none',
-                                            color: '#ff4d4f',
-                                            cursor: 'pointer',
-                                            padding: 0
-                                        }}><Trash2 size={16}/></button>
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
+                            {statsData?.topSellingItems && statsData.topSellingItems.length > 0 ? (
+                                statsData.topSellingItems.map(item => (
+                                    <tr key={item.id}>
+                                        <td>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                                <img src={getImageUrl(item.image)} alt={item.name} style={{
+                                                    width: '40px',
+                                                    height: '40px',
+                                                    borderRadius: '4px',
+                                                    objectFit: 'cover'
+                                                }} />
+                                                <span style={{ fontWeight: 500 }}>{item.name}</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span style={{ 
+                                                fontSize: '0.7rem', 
+                                                padding: '2px 6px', 
+                                                borderRadius: '4px', 
+                                                background: item.type === 'Combo' ? '#f9f0ff' : '#e6f7ff', 
+                                                color: item.type === 'Combo' ? '#722ed1' : '#1890ff',
+                                                fontWeight: 700
+                                            }}>{item.type}</span>
+                                        </td>
+                                        <td style={{ fontWeight: 600 }}>{item.totalSold}</td>
+                                        <td style={{ fontWeight: 700, color: '#ff4d4f' }}>{item.revenue.toLocaleString('vi-VN')} đ</td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan={4} style={{ textAlign: 'center', padding: '30px', color: '#8c8c8c' }}>Chưa có dữ liệu bán hàng</td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                 </div>
 
                 <div className="admin-card">
-                    <h3 style={{marginTop: 0, marginBottom: '24px'}}>Đơn hàng gần đây</h3>
-                    <div style={{display: 'flex', flexDirection: 'column', gap: '16px'}}>
-                        {[
-                            {id: '#ORD-1001', time: '10 phút trước', status: 'delivered', user: 'Hoàng Hữu'},
-                            {id: '#ORD-1002', time: '25 phút trước', status: 'pending', user: 'Minh Anh'},
-                            {id: '#ORD-1003', time: '40 phút trước', status: 'shipped', user: 'Quốc Bảo'},
-                            {id: '#ORD-1004', time: '1 giờ trước', status: 'pending', user: 'Thùy Linh'},
-                        ].map((ord, idx) => (
-                            <div key={idx} style={{
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                                alignItems: 'center',
-                                paddingBottom: '12px',
-                                borderBottom: idx < 3 ? '1px solid #f5f5f5' : 'none'
-                            }}>
-                                <div>
-                                    <div style={{fontWeight: 600, fontSize: '0.9rem'}}>{ord.user}</div>
-                                    <div style={{fontSize: '0.75rem', color: '#8c8c8c'}}>{ord.id} • {ord.time}</div>
-                                </div>
-                                <span className={`status-badge status-${ord.status}`} style={{fontSize: '0.7rem'}}>
-                  {ord.status === 'delivered' ? 'Giao xong' : ord.status === 'shipped' ? 'Đang giao' : 'Chờ xử lý'}
-                </span>
-                            </div>
-                        ))}
+                    <h3 style={{ marginTop: 0, marginBottom: '24px' }}>Đơn hàng gần đây</h3>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                        {statsData?.recentOrders && statsData.recentOrders.length > 0 ? (
+                            statsData.recentOrders.slice(0, 5).map((ord, idx) => {
+                                const statusKey = ord.orderStatus.toLowerCase();
+                                const statusLabel = statusKey === 'delivered' ? 'Giao xong' : statusKey === 'shipped' ? 'Đang giao' : statusKey === 'processing' ? 'Đang xử lý' : 'Chờ xử lý';
+                                
+                                return (
+                                    <div key={ord.idorder} style={{
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center',
+                                        paddingBottom: '12px',
+                                        borderBottom: idx < statsData.recentOrders.length - 1 ? '1px solid #f5f5f5' : 'none'
+                                    }}>
+                                        <div>
+                                            <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>{ord.customerName}</div>
+                                            <div style={{ fontSize: '0.75rem', color: '#8c8c8c' }}>#{ord.idorder.split('-')[0].toUpperCase()} • {new Date(ord.createAt).toLocaleTimeString('vi-VN', {hour: '2-digit', minute:'2-digit'})}</div>
+                                        </div>
+                                        <span className={`status-badge status-${statusKey}`} style={{ fontSize: '0.7rem' }}>
+                                            {statusLabel}
+                                        </span>
+                                    </div>
+                                );
+                            })
+                        ) : (
+                            <div style={{ textAlign: 'center', color: '#8c8c8c', padding: '20px' }}>Chưa có đơn hàng nào</div>
+                        )}
                     </div>
-                    <button className="btn btn-secondary"
-                            style={{width: '100%', marginTop: '20px', fontSize: '0.8rem'}}>Xem tất cả đơn hàng
-                    </button>
+                    <Link to="/admin/orders" className="btn btn-secondary"
+                        style={{ display: 'block', textAlign: 'center', width: '100%', marginTop: '20px', fontSize: '0.8rem', textDecoration: 'none' }}>
+                        Xem tất cả đơn hàng
+                    </Link>
                 </div>
             </div>
         </div>

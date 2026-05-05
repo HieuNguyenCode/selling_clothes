@@ -1,8 +1,9 @@
 import {useState, useEffect} from 'react';
 import {useParams, useNavigate} from 'react-router-dom';
-import {productService, ProductDetail as IProductDetail} from '../../../services/productService';
-import {ArrowLeft, Edit, Building2, Layers, Maximize2, Palette} from 'lucide-react';
+import { productService, ProductDetail as IProductDetail } from '../../../services/productService';
+import { ArrowLeft, Edit, Building2, Layers, Maximize2, Palette } from 'lucide-react';
 import Loading from '../../../components/common/Loading';
+import { getImageUrl } from '../../../utils/urlUtils';
 
 const ProductDetail = () => {
     const {id} = useParams();
@@ -23,19 +24,6 @@ const ProductDetail = () => {
 
     if (loading) return <div className="admin-card"><Loading size={48}/></div>;
     if (!product) return <div className="admin-card">Không tìm thấy sản phẩm.</div>;
-
-    const getImageUrl = (path: string | undefined) => {
-        if (!path) return '';
-        // Nếu path đã là URL tuyệt đối của backend (ví dụ chứa :5267), ta chuyển nó thành tương đối
-        if (path.includes(':5267')) {
-            return path.split(':5267')[1];
-        }
-        // Đảm bảo đường dẫn bắt đầu bằng /images để khớp với Proxy
-        if (path.startsWith('/images/')) return path;
-        if (path.startsWith('images/')) return '/' + path;
-
-        return path;
-    };
 
     return (
         <div style={{display: 'flex', flexDirection: 'column', gap: '24px'}}>

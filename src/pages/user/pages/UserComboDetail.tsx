@@ -4,6 +4,7 @@ import { comboService, ComboDetail } from '../../../services/comboService';
 import { ArrowLeft, ShoppingBag, Package, CheckCircle2, Info, ChevronRight, Zap, TrendingDown, Check, ShieldCheck, Truck } from 'lucide-react';
 import Loading from '../../../components/common/Loading';
 import { useCart } from '../../../context/Cart.Context.tsx';
+import { getImageUrl } from '../../../utils/urlUtils';
 
 const UserComboDetail = () => {
   const { id } = useParams();
@@ -37,12 +38,6 @@ const UserComboDetail = () => {
 
   if (loading) return <Loading />;
   if (!combo) return <div className="container" style={{ padding: '100px 20px', textAlign: 'center' }}>Combo không tồn tại.</div>;
-
-  const getImageUrl = (path: string | undefined) => {
-    if (!path) return '';
-    if (path.includes(':5267')) return path.split(':5267')[1];
-    return path.startsWith('/') ? path : `/${path}`;
-  };
 
   const handleSelect = (index: number, type: 'size' | 'color', value: string) => {
     setSelections(prev => ({

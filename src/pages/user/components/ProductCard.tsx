@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../../context/Cart.Context.tsx';
 import { ShoppingCart, ImageOff } from 'lucide-react';
+import { getImageUrl } from '../../../utils/urlUtils';
 
 interface ProductCardProps {
   product: {
@@ -19,18 +20,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const { addToCart } = useCart();
   const navigate = useNavigate();
 
-  const getFullUrl = (path: string | undefined) => {
-    if (!path) return '';
-    if (path.includes(':5267')) {
-      return path.split(':5267')[1]; 
-    }
-    if (path.startsWith('/images/')) return path;
-    if (path.startsWith('images/')) return '/' + path;
-    
-    return path;
-  };
-
-  const displayImage = getFullUrl(product.image || product.imageUrl);
+  const displayImage = getImageUrl(product.image || product.imageUrl);
 
   const hasSale = product.priceSale !== undefined && product.priceSale !== null && product.priceSale > 0;
   const currentPrice = hasSale ? product.priceSale! : product.price;
