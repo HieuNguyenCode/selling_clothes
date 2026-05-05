@@ -13,9 +13,21 @@ interface UserContextType {
   login: (accessToken: string, refreshToken: string) => void;
   logout: () => void;
   isAdmin: boolean;
+  sessionId: string;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
+
+const LOCAL_STORAGE_SESSION_KEY = 'torano_session_id';
+
+const getOrCreateSessionId = (): string => {
+  let sessionId = localStorage.getItem(LOCAL_STORAGE_SESSION_KEY);
+  if (!sessionId) {
+    sessionId = 'sess_' + Math.random().toString(36).substring(2, 15) + Date.now().toString(36);
+    localStorage.setItem(LOCAL_STORAGE_SESSION_KEY, sessionId);
+  }
+  return sessionId;
+};
 
 const getUserFromJWT = (token: string | null): User | null => {
   if (!token) return null;
@@ -34,6 +46,8 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const token = localStorage.getItem('accessToken');
     return getUserFromJWT(token);
   });
+  
+  const [sessionId] = useState<string>(getOrCreateSessionId);
   
   const [loading, setLoading] = useState(() => {
     return !!localStorage.getItem('refreshToken');
@@ -103,7 +117,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const isAdmin = user?.role?.toLowerCase() === 'admin';
 
   return (
-    <UserContext.Provider value={{ user, loading, login, logout, isAdmin }}>
+    <UserContext.Provider value={{ user, loading, login, logout, isAdmin, sessionId }}>
       {children}
     </UserContext.Provider>
   );

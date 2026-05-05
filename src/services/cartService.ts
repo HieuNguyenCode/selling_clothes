@@ -38,7 +38,17 @@ export interface ShoppingCartResponse {
 export const cartService = {
   fetchCart: async (): Promise<ShoppingCartResponse> => {
     const res = await cartApi.getCart();
-    return res.data;
+    const data = res.data;
+    
+    // Đảm bảo mỗi item có flag isCombo dựa trên sự hiện diện của products
+    if (data && data.shoppingCartItems) {
+      data.shoppingCartItems = data.shoppingCartItems.map((item: any) => ({
+        ...item,
+        isCombo: item.isCombo ?? (item.products && item.products.length > 0)
+      }));
+    }
+    
+    return data;
   },
 
   addItem: async (item: ShoppingCartItemUpdateDto): Promise<void> => {

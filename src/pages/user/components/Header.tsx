@@ -2,7 +2,7 @@ import {Link, useNavigate} from 'react-router-dom';
 import { useUser } from '../../../context/UserContext';
 import {useCart} from '../../../context/Cart.Context.tsx';
 import {useTheme} from '../../../context/Theme.Context.tsx';
-import {Search, User, ShoppingBag, Sun, Moon} from 'lucide-react';
+import {Search, User, ShoppingBag, Sun, Moon, ClipboardList} from 'lucide-react';
 import logoImg from '../../../assets/logo.png';
 
 const Header = () => {
@@ -25,14 +25,17 @@ const Header = () => {
 
                 <nav className="header-nav">
                     <Link to="/">Sản phẩm mới</Link>
-                    <Link to="/sale">Sale</Link>
                     <Link to="/products">Sản phẩm</Link>
                     <Link to="/combos">Combo</Link>
                     <Link to="/">Phụ kiện</Link>
-                    <Link to="/">Hệ thống cửa hàng</Link>
+                    {/*<Link to="/">Hệ thống cửa hàng</Link>*/}
                 </nav>
 
                 <div className="header-actions">
+                    <button className="icon-btn" onClick={() => navigate('/orders')} title="Lịch sử đơn hàng">
+                        <ClipboardList size={22}/>
+                    </button>
+
                     <button className="icon-btn" title="Tìm kiếm">
                         <Search size={22}/>
                     </button>

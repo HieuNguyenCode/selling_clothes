@@ -15,12 +15,14 @@ import ProductForm from './pages/admin/pages/ProductForm';
 import Brands from './pages/admin/pages/Brands';
 import Categories from './pages/admin/pages/Categories';
 import Sales from './pages/admin/pages/Sales';
+import Orders from './pages/admin/pages/Orders';
 import SaleForm from './pages/admin/pages/SaleForm';
 import AdminLayout from './pages/admin/components/AdminLayout';
 import Header from './pages/user/components/Header';
 import Login from './pages/user/pages/Login';
 import Register from './pages/user/pages/Register';
 import Cart from './pages/user/pages/Cart';
+import OrderHistory from './pages/user/pages/OrderHistory';
 import SaleList from './pages/user/pages/SaleList';
 import SaleDetailPage from './pages/user/pages/SaleDetailPage';
 import UserProductList from './pages/user/pages/UserProductList';
@@ -64,6 +66,7 @@ function App() {
                     <Route path="/login" element={<><Header /><main className="main-content"><Login /></main><UserFooter /></>} />
                     <Route path="/register" element={<><Header /><main className="main-content"><Register /></main><UserFooter /></>} />
                     <Route path="/cart" element={<><Header /><main className="main-content"><Cart /></main><UserFooter /></>} />
+                    <Route path="/orders" element={<><Header /><main className="main-content"><OrderHistory /></main><UserFooter /></>} />
                     
                     {/* Danh sách & Chi tiết */}
                     <Route path="/products" element={<><Header /><main className="main-content"><UserProductList /></main><UserFooter /></>} />
@@ -94,9 +97,10 @@ function App() {
                     <Route path="/admin/sale" element={<ProtectedAdminRoute><Sales /></ProtectedAdminRoute>} />
                     <Route path="/admin/sale/add" element={<ProtectedAdminRoute><SaleForm /></ProtectedAdminRoute>} />
                     <Route path="/admin/sale/edit/:id" element={<ProtectedAdminRoute><SaleForm /></ProtectedAdminRoute>} />
+                    <Route path="/admin/orders" element={<ProtectedAdminRoute><Orders /></ProtectedAdminRoute>} />
 
                     {/* Placeholder */}
-                    {['accessories', 'orders', 'search', 'cart-status'].map(path => (
+                    {['accessories', 'search', 'cart-status'].map(path => (
                       <Route key={path} path={`/admin/${path}`} element={
                         <ProtectedAdminRoute>
                           <div className="admin-card">

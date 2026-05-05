@@ -87,9 +87,9 @@ const UserComboList = () => {
                   <h3 style={{ fontSize: '1.25rem', margin: '0 0 15px 0', fontWeight: 700, minHeight: '3em', color: 'var(--text-primary)' }}>{combo.name}</h3>
                   
                   <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '25px' }}>
-                    <div style={{ color: '#ff4d4f', fontWeight: 900, fontSize: '1.5rem' }}>{combo.price.toLocaleString('vi-VN')} đ</div>
-                    {combo.priceSale && (
-                      <div style={{ color: 'var(--text-secondary)', textDecoration: 'line-through', fontSize: '0.9rem' }}>{combo.priceSale.toLocaleString('vi-VN')} đ</div>
+                    <div style={{ color: '#ff4d4f', fontWeight: 900, fontSize: '1.5rem' }}>{(combo.priceSale || combo.price).toLocaleString('vi-VN')} đ</div>
+                    {combo.priceSale && combo.priceSale < combo.price && (
+                      <div style={{ color: 'var(--text-secondary)', textDecoration: 'line-through', fontSize: '0.9rem' }}>{combo.price.toLocaleString('vi-VN')} đ</div>
                     )}
                   </div>
 
@@ -97,33 +97,12 @@ const UserComboList = () => {
                     <button 
                       className="btn btn-secondary" 
                       style={{ flex: 1, height: '45px', borderRadius: '10px', fontSize: '0.85rem' }}
-                      onClick={async (e) => { 
+                      onClick={(e) => { 
                         e.stopPropagation(); 
-                        try {
-                          const fullCombo = await comboService.fetchComboById(combo.id);
-                          await addToCart({
-                            isCombo: true,
-                            name: fullCombo.name,
-                            quantity: 1,
-                            price: fullCombo.price,
-                            image: fullCombo.image,
-                            products: fullCombo.products.map(p => ({
-                              id: p.id,
-                              name: p.name,
-                              image: p.image,
-                              size: '',
-                              color: '',
-                              quantity: p.quantity
-                            }))
-                          });
-                          alert('Đã thêm combo vào giỏ hàng');
-                        } catch (error) {
-                          console.error(error);
-                          alert('Lỗi khi thêm combo vào giỏ hàng');
-                        }
+                        navigate(`/combos/${combo.id}`);
                       }}
                     >
-                      <ShoppingBag size={18} /> THÊM GIỎ
+                      <ShoppingBag size={18} /> CHỌN OPTION
                     </button>
                     <button 
                       className="btn btn-primary" 

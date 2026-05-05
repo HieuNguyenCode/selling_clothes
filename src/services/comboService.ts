@@ -5,6 +5,8 @@ export interface ComboProduct {
   name: string;
   image: string;
   quantity: number;
+  size: string[];
+  color: string[];
 }
 
 export interface ComboDetail {

@@ -112,8 +112,20 @@ const ComboDetail = () => {
                                         <div style={{fontWeight: 600, fontSize: '1rem'}}>{item.name}</div>
                                         <div style={{
                                             fontSize: '0.8rem',
-                                            color: 'var(--text-secondary)'
-                                        }}>ID: {item.id}</div>
+                                            color: 'var(--text-secondary)',
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            gap: '4px',
+                                            marginTop: '4px'
+                                        }}>
+                                            <div>ID: {item.id}</div>
+                                            {item.size && item.size.length > 0 && (
+                                                <div>Sizes: <span style={{color: 'var(--text-primary)', fontWeight: 600}}>{item.size.join(', ')}</span></div>
+                                            )}
+                                            {item.color && item.color.length > 0 && (
+                                                <div>Colors: <span style={{color: 'var(--text-primary)', fontWeight: 600}}>{item.color.join(', ')}</span></div>
+                                            )}
+                                        </div>
                                     </div>
                                     <div style={{
                                         background: '#1890ff',
