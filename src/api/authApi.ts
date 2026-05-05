@@ -1,7 +1,7 @@
 import axiosInstance from '../utils/Axios.Config';
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5267/api';
+const API_URL = import.meta.env.VITE_API_URL || '';
 
 const handleResponse = (res: any) => {
     if (res.data.status === 200 || res.data.status === 201) return res.data;

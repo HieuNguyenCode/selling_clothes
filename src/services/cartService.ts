@@ -52,11 +52,41 @@ export const cartService = {
   },
 
   addItem: async (item: ShoppingCartItemUpdateDto): Promise<void> => {
-    return cartApi.addToCart(item);
+    const payload = {
+      isCombo: String(item.isCombo) === 'true',
+      name: String(item.name || ''),
+      size: String(item.size || ''),
+      color: String(item.color || ''),
+      quantity: Number(item.quantity || 1),
+      products: (item.products || []).map(p => ({
+        id: String(p.id || ''),
+        name: String(p.name || ''),
+        image: String(p.image || ''),
+        size: String(p.size || ''),
+        color: String(p.color || ''),
+        quantity: Number(p.quantity || 1)
+      }))
+    };
+    return cartApi.addToCart(payload);
   },
 
   updateItem: async (id: string, item: ShoppingCartItemUpdateDto): Promise<void> => {
-    return cartApi.updateCartItem(id, item);
+    const payload = {
+      isCombo: String(item.isCombo) === 'true',
+      name: String(item.name || ''),
+      size: String(item.size || ''),
+      color: String(item.color || ''),
+      quantity: Number(item.quantity || 1),
+      products: (item.products || []).map(p => ({
+        id: String(p.id || ''),
+        name: String(p.name || ''),
+        image: String(p.image || ''),
+        size: String(p.size || ''),
+        color: String(p.color || ''),
+        quantity: Number(p.quantity || 1)
+      }))
+    };
+    return cartApi.updateCartItem(id, payload);
   },
 
   removeItem: async (id: string): Promise<void> => {

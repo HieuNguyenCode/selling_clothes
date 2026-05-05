@@ -8,17 +8,17 @@ export default defineConfig({
     proxy: {
       // Chuyển hướng các yêu cầu ảnh sản phẩm
       '/images': {
-        target: 'http://localhost:5267',
+        target: 'http://localhost:8080',
         changeOrigin: true,
       },
       // Chuyển hướng các yêu cầu ảnh Combo
       '/combos': {
-        target: 'http://localhost:5267',
+        target: 'http://localhost:8080',
         changeOrigin: true,
       },
       // Proxy cho API
       '/api': {
-        target: 'http://localhost:5267',
+        target: 'http://localhost:8080',
         changeOrigin: true,
       }
     }

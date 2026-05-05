@@ -42,8 +42,9 @@ const ProductForm = () => {
 
     const urlToFile = async (url: string) => {
         try {
-            const filename = url.split('/').pop() || 'image.png';
-            const response = await fetch(url);
+            const safeUrl = getImageUrl(url);
+            const filename = safeUrl.split('/').pop() || 'image.png';
+            const response = await fetch(safeUrl);
             if (!response.ok) return null;
             const blob = await response.blob();
             return new File([blob], filename, {type: blob.type});
