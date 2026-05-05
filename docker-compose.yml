@@ -1,9 +1,13 @@
 services:
-  selling-clothes-frontend:
-    build: .
-    container_name: selling-clothes-app
-    ports:
-      - "80:80"
-    extra_hosts:
-      - "host.docker.internal:host-gateway" # Allows the container to reach your backend on the host machine
-    restart: always
+    selling-clothes-frontend:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        env_file:
+            - .env  # Dòng này giúp docker-compose nạp file .env
+        container_name: selling-clothes-app
+        ports:
+            - "80:80"
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
+        restart: always
