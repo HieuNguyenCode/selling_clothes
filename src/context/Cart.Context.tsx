@@ -21,6 +21,7 @@ interface CartContextType {
       isCombo: boolean;
       name: string;
       price: number;
+      priceSale?: number | null;
       image: string;
       size?: string;
       color?: string;
@@ -189,7 +190,10 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const cartCount = (cart || []).reduce((acc, item) => acc + (item.quantity || 0), 0);
-  const totalPrice = (cart || []).reduce((acc, item) => acc + (item.price || 0) * (item.quantity || 0), 0);
+  const totalPrice = (cart || []).reduce((acc, item) => {
+    const finalPrice = item.priceSale !== null && item.priceSale !== undefined ? item.priceSale : item.price;
+    return acc + (finalPrice * (item.quantity || 0));
+  }, 0);
 
   return (
     <CartContext.Provider value={{ 

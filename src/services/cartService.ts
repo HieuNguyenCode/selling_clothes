@@ -23,6 +23,7 @@ export interface CartItemResponse {
   isCombo: boolean;
   name: string;
   price: number;
+  priceSale?: number | null;
   image: string;
   size?: string;
   color?: string;

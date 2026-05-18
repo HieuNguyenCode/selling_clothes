@@ -66,7 +66,10 @@ const Cart = () => {
   };
 
   const selectedItems = cart.filter(item => selectedIds.includes(item.id));
-  const selectedTotalPrice = selectedItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+  const selectedTotalPrice = selectedItems.reduce((acc, item) => {
+    const finalPrice = item.priceSale !== null && item.priceSale !== undefined ? item.priceSale : item.price;
+    return acc + (finalPrice * item.quantity);
+  }, 0);
 
   const handleOpenCheckout = () => {
     if (selectedIds.length === 0) {
@@ -228,8 +231,18 @@ const Cart = () => {
                       </div>
                     </td>
                     <td style={{ padding: '20px', textAlign: 'right' }}>
-                      <div style={{ fontWeight: 800, fontSize: '1.1rem', color: '#ff4d4f' }}>{(item.price * item.quantity).toLocaleString('vi-VN')} đ</div>
-                      <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{item.price.toLocaleString('vi-VN')} đ / cái</div>
+                      {item.priceSale !== null && item.priceSale !== undefined ? (
+                        <>
+                          <div style={{ fontWeight: 800, fontSize: '1.1rem', color: '#ff4d4f' }}>{(item.priceSale * item.quantity).toLocaleString('vi-VN')} đ</div>
+                          <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', textDecoration: 'line-through' }}>{item.price.toLocaleString('vi-VN')} đ</div>
+                          <div style={{ fontSize: '0.8rem', color: '#ff4d4f', fontWeight: 600 }}>{item.priceSale.toLocaleString('vi-VN')} đ / cái</div>
+                        </>
+                      ) : (
+                        <>
+                          <div style={{ fontWeight: 800, fontSize: '1.1rem', color: '#ff4d4f' }}>{(item.price * item.quantity).toLocaleString('vi-VN')} đ</div>
+                          <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{item.price.toLocaleString('vi-VN')} đ / cái</div>
+                        </>
+                      )}
                     </td>
                     <td style={{ padding: '20px', textAlign: 'right' }}>
                       <button 
