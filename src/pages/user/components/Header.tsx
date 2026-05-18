@@ -27,7 +27,7 @@ const Header = () => {
                     <Link to="/">Sản phẩm mới</Link>
                     <Link to="/products">Sản phẩm</Link>
                     <Link to="/combos">Combo</Link>
-                    <Link to="/">Phụ kiện</Link>
+                    {/*<Link to="/">Phụ kiện</Link>*/}
                     {/*<Link to="/">Hệ thống cửa hàng</Link>*/}
                 </nav>
 

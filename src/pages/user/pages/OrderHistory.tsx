@@ -73,9 +73,21 @@ const OrderHistory = () => {
           {orders.map(order => {
             const status = getStatusInfo(order.orderStatus);
             return (
-              <div key={order.idorder} style={{ background: 'var(--bg-primary)', padding: '25px', borderRadius: '20px', border: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 4px 12px rgba(0,0,0,0.02)', transition: 'transform 0.2s' }}>
-                <div style={{ display: 'flex', gap: '30px', alignItems: 'center' }}>
-                  <div style={{ width: '60px', height: '60px', borderRadius: '15px', background: 'var(--bg-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-color)' }}>
+              <div key={order.idorder} style={{ 
+                background: 'var(--bg-primary)', 
+                padding: '25px', 
+                borderRadius: '20px', 
+                border: '1px solid var(--border)', 
+                display: 'flex', 
+                flexWrap: 'wrap',
+                justifyContent: 'space-between', 
+                alignItems: 'center', 
+                gap: '20px',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.02)', 
+                transition: 'transform 0.2s' 
+              }}>
+                <div style={{ display: 'flex', gap: '20px', alignItems: 'center', flex: '1 1 300px' }}>
+                  <div style={{ width: '60px', height: '60px', borderRadius: '15px', background: 'var(--bg-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-color)', flexShrink: 0 }}>
                     <status.icon size={30} />
                   </div>
                   <div>
@@ -91,8 +103,8 @@ const OrderHistory = () => {
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', gap: '40px', alignItems: 'center' }}>
-                  <div style={{ textAlign: 'right' }}>
+                <div style={{ display: 'flex', gap: '40px', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'flex-end', flex: '1 1 200px' }}>
+                  <div style={{ textAlign: 'right', minWidth: '100px' }}>
                     <div style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-secondary)', marginBottom: '5px' }}>TRẠNG THÁI</div>
                     <div style={{ color: status.color, fontWeight: 800, fontSize: '1rem', textTransform: 'uppercase' }}>{status.text}</div>
                   </div>
@@ -133,6 +145,7 @@ const OrderHistory = () => {
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
         title={`Chi tiết đơn hàng: #${selectedOrder?.idorder.split('-')[0].toUpperCase()}`}
+        maxWidth="800px"
       >
         {selectedOrder && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '25px' }}>

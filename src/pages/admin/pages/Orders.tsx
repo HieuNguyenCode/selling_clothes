@@ -291,7 +291,7 @@ const Orders = () => {
                 <div style={{ width: '4px', height: '18px', background: '#faad14', borderRadius: '2px' }}></div>
                 Sản phẩm trong đơn ({selectedOrder.items.length})
               </h4>
-              <div style={{ border: '1px solid #f0f0f0', borderRadius: '12px', overflow: 'hidden' }}>
+              <div style={{ border: '1px solid #f0f0f0', borderRadius: '12px', overflowX: 'auto' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                   <thead style={{ background: '#fafafa', borderBottom: '1px solid #f0f0f0' }}>
                     <tr>

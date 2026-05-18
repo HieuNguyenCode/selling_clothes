@@ -28,17 +28,21 @@ const Modal: React.FC<ModalProps> = ({
       backgroundColor: 'rgba(0,0,0,0.6)', 
       display: 'flex', 
       justifyContent: 'center', 
-      alignItems: 'center', 
+      alignItems: 'flex-start', 
       zIndex: 2000, 
-      backdropFilter: 'blur(4px)' 
+      backdropFilter: 'blur(4px)',
+      overflowY: 'auto',
+      padding: '40px 20px'
     }}>
       <div style={{ 
-        background: 'white', 
+        background: 'var(--bg-primary, white)', 
         padding: '40px', 
         borderRadius: 'var(--radius-lg)', 
         width: '100%', 
         maxWidth: maxWidth, 
-        boxShadow: '0 10px 25px rgba(0,0,0,0.2)' 
+        boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
+        margin: 'auto',
+        color: 'var(--text-primary, #1a1a1a)'
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
           <h3 style={{ margin: 0, fontSize: '1.4rem' }}>{title}</h3>
