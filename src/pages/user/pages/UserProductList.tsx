@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { productService, ProductList } from '../../../services/productService';
-import { Search, Filter, SlidersHorizontal } from 'lucide-react';
+import { Search, Filter, SlidersHorizontal, Check } from 'lucide-react';
 import Loading from '../../../components/common/Loading';
 import ProductCard from '../components/ProductCard';
 import Pagination from '../../../components/common/Pagination';
@@ -11,11 +11,22 @@ const UserProductList = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [sortBy, setSortBy] = useState('');
+  const [sortBy, setSortBy] = useState('UpdateAt');
   const [sortAsc, setSortAsc] = useState(false);
+  const [sortValue, setSortValue] = useState('newest');
+  const [isSortOpen, setIsSortOpen] = useState(false);
+  const sortRef = useRef<HTMLDivElement>(null);
   const pageSize = 12;
 
-  const loadProducts = async (search = '', page = 1, sort = '', asc = false) => {
+  const sortOptions = [
+    { value: 'newest', label: 'Mới nhất' },
+    { value: 'price-asc', label: 'Giá: Thấp đến Cao' },
+    { value: 'price-desc', label: 'Giá: Cao đến Thấp' },
+    { value: 'name-asc', label: 'Tên: A-Z' },
+    { value: 'name-desc', label: 'Tên: Z-A' },
+  ];
+
+  const loadProducts = async (search = '', page = 1, sort = 'UpdateAt', asc = false) => {
     setLoading(true);
     try {
       const res = await productService.fetchProducts(search, page, pageSize, sort, asc);
@@ -32,17 +43,30 @@ const UserProductList = () => {
     loadProducts(searchTerm, currentPage, sortBy, sortAsc);
   }, [currentPage, sortBy, sortAsc]);
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (sortRef.current && !sortRef.current.contains(event.target as Node)) {
+        setIsSortOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     setCurrentPage(1);
     loadProducts(searchTerm, 1, sortBy, sortAsc);
   };
 
-  const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value;
+  const applySort = (value: string) => {
+    setSortValue(value);
     setCurrentPage(1);
+    setIsSortOpen(false);
+    
     if (value === 'newest') {
-      setSortBy('Date');
+      setSortBy('UpdateAt');
       setSortAsc(false);
     } else if (value === 'price-asc') {
       setSortBy('Price');
@@ -67,18 +91,46 @@ const UserProductList = () => {
           <p style={{ color: '#8c8c8c', margin: 0 }}>Khám phá bộ sưu tập thời trang nam mới nhất từ TORANO</p>
         </div>
         
-        <form onSubmit={handleSearch} style={{ display: 'flex', gap: '10px', width: '100%', maxWidth: '400px' }}>
-          <div style={{ position: 'relative', flex: 1 }}>
-            <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#8c8c8c' }} />
-            <input 
-              type="text" 
-              placeholder="Tìm kiếm sản phẩm..." 
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              style={{ width: '100%', padding: '12px 12px 12px 40px', borderRadius: '8px', border: '1px solid #d9d9d9', outline: 'none' }}
-            />
-          </div>
-          <button type="submit" className="btn btn-primary" style={{ padding: '0 25px' }}>TÌM</button>
+        <form onSubmit={handleSearch} style={{ 
+          display: 'flex', 
+          alignItems: 'center',
+          background: 'white',
+          border: '1px solid #e0e0e0',
+          borderRadius: '100px',
+          padding: '4px 4px 4px 18px',
+          width: '100%', 
+          maxWidth: '450px',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+          transition: 'border-color 0.3s'
+        }}>
+          <Search size={18} style={{ color: '#8c8c8c', flexShrink: 0 }} />
+          <input 
+            type="text" 
+            placeholder="Tìm kiếm sản phẩm..." 
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{ 
+              flex: 1,
+              padding: '10px 12px',
+              border: 'none',
+              outline: 'none',
+              fontSize: '0.95rem',
+              background: 'transparent'
+            }}
+          />
+          <button 
+            type="submit" 
+            className="btn btn-primary" 
+            style={{ 
+              padding: '10px 25px',
+              height: '42px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            TÌM KIẾM
+          </button>
         </form>
       </div>
 
@@ -97,33 +149,82 @@ const UserProductList = () => {
 
         {/* Product Grid */}
         <div style={{ flex: 1 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-            <span style={{ fontSize: '0.9rem', color: '#8c8c8c' }}>Hiển thị {products.length} sản phẩm</span>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <label style={{ fontSize: '0.9rem', color: '#8c8c8c', fontWeight: 600 }}>Sắp xếp:</label>
-              <div style={{ position: 'relative' }}>
-                <select 
-                  onChange={handleSortChange}
-                  style={{ 
-                    appearance: 'none',
-                    padding: '8px 35px 8px 15px', 
-                    borderRadius: '6px', 
-                    border: '1px solid #d9d9d9', 
-                    background: 'white',
-                    cursor: 'pointer',
-                    fontSize: '0.9rem',
-                    outline: 'none',
-                    fontWeight: 500
-                  }}
-                >
-                  <option value="newest">Mới nhất</option>
-                  <option value="price-asc">Giá: Thấp đến Cao</option>
-                  <option value="price-desc">Giá: Cao đến Thấp</option>
-                  <option value="name-asc">Tên: A-Z</option>
-                  <option value="name-desc">Tên: Z-A</option>
-                </select>
-                <SlidersHorizontal size={14} style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: '#8c8c8c' }} />
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
+            <span style={{ fontSize: '0.95rem', color: '#8c8c8c', fontWeight: 500 }}>
+              Hiển thị <strong style={{ color: '#000' }}>{products.length}</strong> sản phẩm
+            </span>
+            <div 
+              ref={sortRef}
+              style={{ 
+                position: 'relative',
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '12px', 
+                background: '#f5f5f5', 
+                padding: '8px 20px', 
+                borderRadius: '100px',
+                border: '1px solid #efefef',
+                cursor: 'pointer',
+                userSelect: 'none',
+                transition: 'all 0.2s'
+              }}
+              onClick={() => setIsSortOpen(!isSortOpen)}
+            >
+              <label style={{ fontSize: '0.85rem', color: '#666', fontWeight: 600, whiteSpace: 'nowrap', cursor: 'pointer' }}>Sắp xếp:</label>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontSize: '0.9rem', fontWeight: 700, color: '#000' }}>
+                  {sortOptions.find(o => o.value === sortValue)?.label}
+                </span>
+                <SlidersHorizontal size={14} style={{ color: '#000', transform: isSortOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.3s' }} />
               </div>
+
+              {isSortOpen && (
+                <div style={{ 
+                  position: 'absolute', 
+                  top: 'calc(100% + 10px)', 
+                  right: 0, 
+                  background: 'white', 
+                  borderRadius: '16px', 
+                  boxShadow: '0 15px 35px rgba(0,0,0,0.15)', 
+                  padding: '8px',
+                  minWidth: '220px',
+                  zIndex: 100,
+                  border: '1px solid #f0f0f0',
+                  animation: 'fadeIn 0.2s ease-out'
+                }}>
+                  {sortOptions.map(option => (
+                    <div 
+                      key={option.value}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        applySort(option.value);
+                      }}
+                      style={{ 
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        padding: '12px 16px', 
+                        borderRadius: '10px',
+                        fontSize: '0.9rem',
+                        fontWeight: sortValue === option.value ? 700 : 500,
+                        color: sortValue === option.value ? '#000' : '#444',
+                        background: sortValue === option.value ? '#f5f5f5' : 'transparent',
+                        transition: 'all 0.2s',
+                        cursor: 'pointer'
+                      }}
+                      onMouseEnter={(e) => {
+                        if (sortValue !== option.value) e.currentTarget.style.background = '#fafafa';
+                      }}
+                      onMouseLeave={(e) => {
+                        if (sortValue !== option.value) e.currentTarget.style.background = 'transparent';
+                      }}
+                    >
+                      {option.label}
+                      {sortValue === option.value && <Check size={14} style={{ color: '#000' }} />}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
