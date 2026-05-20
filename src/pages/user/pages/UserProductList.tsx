@@ -26,9 +26,15 @@ const UserProductList = () => {
     { value: 'name-desc', label: 'Tên: Z-A' },
   ];
 
-  const loadProducts = async (search = '', page = 1, sort = 'UpdateAt', asc = false) => {
+  const loadProducts = async (
+    search = searchTerm, 
+    page = currentPage, 
+    sort = sortBy, 
+    asc = sortAsc
+  ) => {
     setLoading(true);
     try {
+      // Đảm bảo dùng pageSize đúng của component
       const res = await productService.fetchProducts(search, page, pageSize, sort, asc);
       setProducts(res.data || []);
       setTotalPages(res.totalPages || 1);
@@ -40,7 +46,8 @@ const UserProductList = () => {
   };
 
   useEffect(() => {
-    loadProducts(searchTerm, currentPage, sortBy, sortAsc);
+    // Gọi không đối số để sử dụng giá trị mặc định từ state (UpdateAt, false)
+    loadProducts();
   }, [currentPage, sortBy, sortAsc]);
 
   // Close dropdown when clicking outside
