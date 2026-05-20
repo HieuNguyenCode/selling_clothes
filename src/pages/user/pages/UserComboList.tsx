@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { comboService } from '../../../services/comboService';
 import { Search, Layers, ChevronRight, ShoppingBag } from 'lucide-react';
@@ -13,14 +13,32 @@ const UserComboList = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [pageSize, setPageSize] = useState(9);
+  const gridContainerRef = useRef<HTMLDivElement>(null);
+  
   const navigate = useNavigate();
   const { addToCart } = useCart();
-  const pageSize = 9;
 
-  const loadCombos = async (search = '', page = 1) => {
+  // Hàm tính toán pageSize động cho Combo
+  const updatePageSize = () => {
+    if (gridContainerRef.current) {
+      const width = gridContainerRef.current.offsetWidth;
+      const minItemWidth = 320; // Khớp với minmax trong combo grid
+      const gap = 30;
+      
+      // Số combo tối đa có thể chứa trên 1 hàng
+      const itemsPerRow = Math.floor((width + gap) / (minItemWidth + gap));
+      const targetRows = 2; // Combo thường to hơn nên 2 hàng là vừa đẹp
+      const newPageSize = Math.max(itemsPerRow * targetRows, 4);
+      
+      setPageSize(newPageSize);
+    }
+  };
+
+  const loadCombos = async (search = searchTerm, page = currentPage, size = pageSize) => {
     setLoading(true);
     try {
-      const res = await comboService.fetchCombos(search, page, pageSize);
+      const res = await comboService.fetchCombos(search, page, size);
       setCombos(res.data || []);
       setTotalPages(res.totalPages || 1);
     } catch (error) {
@@ -30,39 +48,76 @@ const UserComboList = () => {
     }
   };
 
+  // Khởi tạo và lắng nghe resize
   useEffect(() => {
-    loadCombos(searchTerm, currentPage);
-  }, [currentPage]);
+    updatePageSize();
+    window.addEventListener('resize', updatePageSize);
+    return () => window.removeEventListener('resize', updatePageSize);
+  }, []);
+
+  // Tải lại khi pageSize hoặc các tham số khác thay đổi
+  useEffect(() => {
+    loadCombos(searchTerm, currentPage, pageSize);
+  }, [currentPage, pageSize]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     setCurrentPage(1);
-    loadCombos(searchTerm, 1);
+    loadCombos(searchTerm, 1, pageSize);
   };
 
   return (
     <div className="container" style={{ padding: '40px 20px' }}>
-      <div style={{ textAlign: 'center', marginBottom: '60px' }}>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', background: 'var(--bg-accent)', color: 'var(--text-primary)', padding: '8px 20px', borderRadius: '30px', marginBottom: '20px', fontWeight: 700, fontSize: '0.85rem' }}>
+      <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', background: 'var(--text-primary)', color: 'var(--bg-primary)', padding: '8px 20px', borderRadius: '30px', marginBottom: '20px', fontWeight: 700, fontSize: '0.85rem' }}>
           <Layers size={18} /> SIÊU TIẾT KIỆM
         </div>
         <h1 style={{ fontSize: '3rem', fontWeight: 900, margin: '0 0 15px 0', color: 'var(--text-primary)' }}>COMBO ƯU ĐÃI</h1>
         <p style={{ color: 'var(--text-secondary)', maxWidth: '600px', margin: '0 auto' }}>Sở hữu trọn bộ trang phục sành điệu với mức giá không thể hấp dẫn hơn. Tiết kiệm lên đến 30% khi mua theo Combo.</p>
       </div>
 
-      <div style={{ marginBottom: '40px', display: 'center', justifyContent: 'center' }}>
-        <form onSubmit={handleSearch} style={{ display: 'flex', gap: '10px', width: '100%', maxWidth: '500px', margin: '0 auto' }}>
-          <div style={{ position: 'relative', flex: 1 }}>
-            <Search size={18} style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }} />
-            <input 
-              type="text" 
-              placeholder="Tìm kiếm gói combo..." 
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              style={{ width: '100%', padding: '14px 14px 14px 45px', borderRadius: '30px', border: '1px solid var(--border)', background: 'var(--bg-primary)', color: 'var(--text-primary)', outline: 'none', fontSize: '1rem', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}
-            />
-          </div>
-          <button type="submit" className="btn btn-primary" style={{ padding: '0 30px', borderRadius: '30px' }}>TÌM KIẾM</button>
+      <div style={{ marginBottom: '60px', display: 'flex', justifyContent: 'center' }}>
+        <form onSubmit={handleSearch} style={{ 
+          display: 'flex', 
+          alignItems: 'center',
+          background: 'var(--bg-primary)',
+          border: '1px solid var(--border)',
+          borderRadius: '100px',
+          padding: '4px 4px 4px 18px',
+          width: '100%', 
+          maxWidth: '500px',
+          boxShadow: '0 10px 30px rgba(0,0,0,0.05)',
+        }}>
+          <Search size={18} style={{ color: 'var(--text-secondary)', flexShrink: 0 }} />
+          <input 
+            type="text" 
+            placeholder="Tìm kiếm gói combo..." 
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{ 
+              flex: 1,
+              padding: '12px',
+              border: 'none',
+              outline: 'none',
+              fontSize: '1rem',
+              background: 'transparent',
+              color: 'var(--text-primary)'
+            }}
+          />
+          <button 
+            type="submit" 
+            className="btn btn-primary" 
+            style={{ 
+              padding: '0 30px',
+              height: '46px',
+              borderRadius: '100px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            TÌM KIẾM
+          </button>
         </form>
       </div>
 
@@ -70,7 +125,10 @@ const UserComboList = () => {
         <Loading />
       ) : (
         <>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '30px' }}>
+          <div 
+            ref={gridContainerRef}
+            style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '30px' }}
+          >
             {combos.map(combo => (
               <div 
                 key={combo.id} 
@@ -80,7 +138,7 @@ const UserComboList = () => {
               >
                 <div style={{ position: 'relative', width: '100%', aspectRatio: '4/3', overflow: 'hidden', background: 'var(--bg-secondary)' }}>
                   <img src={getImageUrl(combo.image)} alt={combo.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  <div style={{ position: 'absolute', top: '15px', right: '15px', background: 'var(--accent-color)', color: 'var(--bg-primary)', padding: '5px 15px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 700 }}>
+                  <div style={{ position: 'absolute', top: '15px', right: '15px', background: 'var(--badge-bg)', color: 'white', padding: '5px 15px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 700 }}>
                     COMBO HOT
                   </div>
                 </div>
