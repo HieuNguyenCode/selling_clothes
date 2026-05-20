@@ -15,8 +15,9 @@ const UserProductList = () => {
   const [sortAsc, setSortAsc] = useState(false);
   const [sortValue, setSortValue] = useState('newest');
   const [isSortOpen, setIsSortOpen] = useState(false);
+  const [pageSize, setPageSize] = useState(15); // Giá trị mặc định an toàn
   const sortRef = useRef<HTMLDivElement>(null);
-  const pageSize = 12;
+  const gridContainerRef = useRef<HTMLDivElement>(null);
 
   const sortOptions = [
     { value: 'newest', label: 'Mới nhất' },
@@ -26,16 +27,32 @@ const UserProductList = () => {
     { value: 'name-desc', label: 'Tên: Z-A' },
   ];
 
+  // Hàm tính toán pageSize động
+  const updatePageSize = () => {
+    if (gridContainerRef.current) {
+      const width = gridContainerRef.current.offsetWidth;
+      const minItemWidth = 220; // Khớp với minmax trong CSS grid
+      const gap = 30;
+      
+      // Tính số item trên 1 hàng
+      const itemsPerRow = Math.floor((width + gap) / (minItemWidth + gap));
+      const targetRows = 3; // Bạn muốn hiển thị 3 hàng
+      const newSize = Math.max(itemsPerRow * targetRows, 6); // Tối thiểu 6 item
+      
+      setPageSize(newSize);
+    }
+  };
+
   const loadProducts = async (
     search = searchTerm, 
     page = currentPage, 
+    size = pageSize,
     sort = sortBy, 
     asc = sortAsc
   ) => {
     setLoading(true);
     try {
-      // Đảm bảo dùng pageSize đúng của component
-      const res = await productService.fetchProducts(search, page, pageSize, sort, asc);
+      const res = await productService.fetchProducts(search, page, size, sort, asc);
       setProducts(res.data || []);
       setTotalPages(res.totalPages || 1);
     } catch (error) {
@@ -45,10 +62,17 @@ const UserProductList = () => {
     }
   };
 
+  // Khởi tạo pageSize khi component mount và khi resize
   useEffect(() => {
-    // Gọi không đối số để sử dụng giá trị mặc định từ state (UpdateAt, false)
-    loadProducts();
-  }, [currentPage, sortBy, sortAsc]);
+    updatePageSize();
+    window.addEventListener('resize', updatePageSize);
+    return () => window.removeEventListener('resize', updatePageSize);
+  }, []);
+
+  // Tải dữ liệu khi các tham số quan trọng thay đổi
+  useEffect(() => {
+    loadProducts(searchTerm, currentPage, pageSize, sortBy, sortAsc);
+  }, [currentPage, sortBy, sortAsc, pageSize]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -64,7 +88,7 @@ const UserProductList = () => {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     setCurrentPage(1);
-    loadProducts(searchTerm, 1, sortBy, sortAsc);
+    loadProducts(searchTerm, 1, pageSize, sortBy, sortAsc);
   };
 
   const applySort = (value: string) => {
@@ -149,13 +173,12 @@ const UserProductList = () => {
               <Filter size={18} /> BỘ LỌC
             </h4>
             <div style={{ height: '1px', background: '#f0f0f0', marginBottom: '20px' }}></div>
-            {/* Thêm các bộ lọc ở đây */}
             <p style={{ color: '#8c8c8c', fontSize: '0.9rem' }}>Đang cập nhật bộ lọc...</p>
           </div>
         </aside>
 
         {/* Product Grid */}
-        <div style={{ flex: 1 }}>
+        <div style={{ flex: 1 }} ref={gridContainerRef}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
             <span style={{ fontSize: '0.95rem', color: '#8c8c8c', fontWeight: 500 }}>
               Hiển thị <strong style={{ color: '#000' }}>{products.length}</strong> sản phẩm
