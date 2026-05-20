@@ -6,8 +6,8 @@ const handleResponse = (res: any) => {
 };
 
 export const productApi = {
-  getProducts: (search = '', page = 1, pageSize = 10) => 
-    axiosInstance.get(`/api/v1/Product`, { params: { search, page, pageSize } }).then(handleResponse),
+  getProducts: (search = '', page = 1, pageSize = 10, sortBy = '', sortAsc = true) => 
+    axiosInstance.get(`/api/v1/Product`, { params: { search, page, pageSize, sortBy, sortAsc } }).then(handleResponse),
 
   getProductById: (id: string) => 
     axiosInstance.get(`/api/v1/Product/${id}`).then(handleResponse),

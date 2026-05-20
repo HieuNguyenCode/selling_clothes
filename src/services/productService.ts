@@ -19,8 +19,8 @@ export interface ProductDetail extends ProductList {
 }
 
 export const productService = {
-  fetchProducts: async (search = '', page = 1, pageSize = 50) => {
-    return productApi.getProducts(search, page, pageSize);
+  fetchProducts: async (search = '', page = 1, pageSize = 50, sortBy = '', sortAsc = true) => {
+    return productApi.getProducts(search, page, pageSize, sortBy, sortAsc);
   },
 
   fetchProductById: async (id: string) => {

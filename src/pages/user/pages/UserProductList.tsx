@@ -11,12 +11,14 @@ const UserProductList = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [sortBy, setSortBy] = useState('');
+  const [sortAsc, setSortAsc] = useState(false);
   const pageSize = 12;
 
-  const loadProducts = async (search = '', page = 1) => {
+  const loadProducts = async (search = '', page = 1, sort = '', asc = false) => {
     setLoading(true);
     try {
-      const res = await productService.fetchProducts(search, page, pageSize);
+      const res = await productService.fetchProducts(search, page, pageSize, sort, asc);
       setProducts(res.data || []);
       setTotalPages(res.totalPages || 1);
     } catch (error) {
@@ -27,13 +29,34 @@ const UserProductList = () => {
   };
 
   useEffect(() => {
-    loadProducts(searchTerm, currentPage);
-  }, [currentPage]);
+    loadProducts(searchTerm, currentPage, sortBy, sortAsc);
+  }, [currentPage, sortBy, sortAsc]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     setCurrentPage(1);
-    loadProducts(searchTerm, 1);
+    loadProducts(searchTerm, 1, sortBy, sortAsc);
+  };
+
+  const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    setCurrentPage(1);
+    if (value === 'newest') {
+      setSortBy('Date');
+      setSortAsc(false);
+    } else if (value === 'price-asc') {
+      setSortBy('Price');
+      setSortAsc(true);
+    } else if (value === 'price-desc') {
+      setSortBy('Price');
+      setSortAsc(false);
+    } else if (value === 'name-asc') {
+      setSortBy('Name');
+      setSortAsc(true);
+    } else if (value === 'name-desc') {
+      setSortBy('Name');
+      setSortAsc(false);
+    }
   };
 
   return (
@@ -76,9 +99,32 @@ const UserProductList = () => {
         <div style={{ flex: 1 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
             <span style={{ fontSize: '0.9rem', color: '#8c8c8c' }}>Hiển thị {products.length} sản phẩm</span>
-            <button style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600, fontSize: '0.9rem' }}>
-              Sắp xếp <SlidersHorizontal size={16} />
-            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <label style={{ fontSize: '0.9rem', color: '#8c8c8c', fontWeight: 600 }}>Sắp xếp:</label>
+              <div style={{ position: 'relative' }}>
+                <select 
+                  onChange={handleSortChange}
+                  style={{ 
+                    appearance: 'none',
+                    padding: '8px 35px 8px 15px', 
+                    borderRadius: '6px', 
+                    border: '1px solid #d9d9d9', 
+                    background: 'white',
+                    cursor: 'pointer',
+                    fontSize: '0.9rem',
+                    outline: 'none',
+                    fontWeight: 500
+                  }}
+                >
+                  <option value="newest">Mới nhất</option>
+                  <option value="price-asc">Giá: Thấp đến Cao</option>
+                  <option value="price-desc">Giá: Cao đến Thấp</option>
+                  <option value="name-asc">Tên: A-Z</option>
+                  <option value="name-desc">Tên: Z-A</option>
+                </select>
+                <SlidersHorizontal size={14} style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: '#8c8c8c' }} />
+              </div>
+            </div>
           </div>
 
           {loading ? (
